@@ -22,11 +22,8 @@ services:
     environment:
       POSTGRES_DB: origen
       POSTGRES_USER: postgres
-      POSTGRES_PASSWORD: postgres
-      # VULNERABILIDAD (configuración): se usa una contraseña trivial y la base
-      # de datos acepta conexiones desde cualquier origen ("trust"), sin
-      # contraseña ni cifrado. Corregir → md5/scram-sha-256 + contraseña robusta.
-      POSTGRES_HOST_AUTH_METHOD: trust
+      POSTGRES_PASSWORD: ${POSTGRES_PASSWORD:?Configura POSTGRES_PASSWORD en .env}
+      DB_PASSWORD: ${DB_PASSWORD:?Configura DB_PASSWORD en .env}
     volumes:
       - datos_origen:/var/lib/postgresql/data
       - ./docker/initdb:/docker-entrypoint-initdb.d:ro
@@ -53,19 +50,20 @@ services:
       DB_HOST: db
       DB_PORT: 5432
       DB_NAME: origen
-      # VULNERABILIDAD (mínimos privilegios): la aplicación se conecta con el
-      # superusuario `postgres`. Corregir → usar el usuario `origen_app` que
-      # sólo tiene permisos sobre las tablas del catálogo (ver
-      # docker/initdb/02-usuario-aplicacion.sql).
-      DB_USER: postgres
-      DB_PASSWORD: postgres
+      DB_USER: origen_app
+      DB_PASSWORD: ${DB_PASSWORD:?Configura DB_PASSWORD en .env}
+      ADMIN_INITIAL_PASSWORD: ${ADMIN_INITIAL_PASSWORD:?Configura ADMIN_INITIAL_PASSWORD en .env}
+      OWNER_INITIAL_PASSWORD: ${OWNER_INITIAL_PASSWORD:?Configura OWNER_INITIAL_PASSWORD en .env}
+      BARISTA_INITIAL_PASSWORD: ${BARISTA_INITIAL_PASSWORD:?Configura BARISTA_INITIAL_PASSWORD en .env}
+      MOZO_INITIAL_PASSWORD: ${MOZO_INITIAL_PASSWORD:?Configura MOZO_INITIAL_PASSWORD en .env}
+      CLIENT_INITIAL_PASSWORD: ${CLIENT_INITIAL_PASSWORD:?Configura CLIENT_INITIAL_PASSWORD en .env}
       UPLOADS_DIR: /app/uploads
       # Puerto publicado en el host, sólo para los mensajes de arranque.
       APP_PORT: "${APP_PORT:-8080}"
     ports:
       # Puerto en el host. Si en tu máquina el 8080 está ocupado, exportá
       # APP_PORT=8090 antes de `docker compose up` (o ponelo en un .env).
-      - "${APP_PORT:-8080}:3000"
+      - "127.0.0.1:${APP_PORT:-8080}:3000"
     volumes:
       # Montaje del código en el host: se edita con el IDE y el contenedor
       # toma los cambios al reiniciar (docker compose restart app).

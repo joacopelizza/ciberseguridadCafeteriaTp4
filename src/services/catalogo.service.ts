@@ -1,58 +1,75 @@
-import * as db from '../db';
+﻿import * as db from '../db';
 import { calcularPrecio } from '../catalogo';
 import type { DatosProducto, Producto, ProductoConPrecio } from '../tipos';
+import { crearErrorHttp, textoDentroDeRango, valoresValidos } from '../validacion';
 
-/** Filtros del menú, tal como llegan en la query string. */
+/** Filtros del menÃº, tal como llegan en la query string. */
 export interface FiltrosCatalogo {
   tipo?: string;
   variedad?: string;
   q?: string;
 }
 
-/** Datos que manda el panel de administración al crear o editar. */
+/** Datos que manda el panel de administraciÃ³n al crear o editar. */
 export type DatosProductoEntrada = Partial<DatosProducto> & { activo?: boolean };
 
 /** Id tal como llega en la URL (texto) o ya convertido. */
 type Id = number | string;
 
 /**
- * Servicio de catálogo.
+ * Servicio de catÃ¡logo.
  *
  * -----------------------------------------------------------------------------
- * FALLA — Inyección SQL (OWASP A03:2021)
+ * ProtecciÃ³n frente a inyecciÃ³n SQL (OWASP A03:2021)
  * -----------------------------------------------------------------------------
- * Los filtros del catálogo (tipo, variedad, búsqueda) se concatenan en el
- * texto SQL. Un valor con comillas rompe la consulta y permite modificar su
- * lógica: ampliar el conjunto de resultados, leer otras tablas mediante UNION
- * o incluso borrar datos.
+ * Los filtros del catÃ¡logo y la consulta por id usan parÃ¡metros posicionales.
  *
- * Corrección: consultas parametrizadas con $1, $2, ... y listas blancas
- * (validar que `tipo` sea uno de los valores conocidos antes de usarlo).
+ * Los valores se envÃ­an separados del texto SQL y los filtros se validan con
+ * una lista de valores permitidos y un lÃ­mite para el texto de bÃºsqueda.
  * -----------------------------------------------------------------------------
  */
 
-/** Lista productos aplicando los filtros del menú. */
+/** Lista productos aplicando los filtros del menÃº. */
 export async function listar(filtros: FiltrosCatalogo = {}): Promise<ProductoConPrecio[]> {
   const { tipo, variedad, q } = filtros;
 
-  // FALLA: concatenación directa de entrada de usuario en la consulta.
+  if (tipo && !valoresValidos.tiposProducto.includes(tipo as (typeof valoresValidos.tiposProducto)[number])) {
+    throw crearErrorHttp(400, 'El tipo de producto no es vÃ¡lido.');
+  }
+  if (variedad && !valoresValidos.variedades.includes(variedad as (typeof valoresValidos.variedades)[number])) {
+    throw crearErrorHttp(400, 'El origen no es vÃ¡lido.');
+  }
+  if (q !== undefined && !textoDentroDeRango(q, 0, 100)) {
+    throw crearErrorHttp(400, 'El texto de bÃºsqueda es demasiado largo.');
+  }
+
   let sql = 'SELECT * FROM productos WHERE activo = true';
-  if (tipo) sql += ` AND tipo = '${tipo}'`;
-  if (variedad) sql += ` AND variedad = '${variedad}'`;
+  const parametros: unknown[] = [];
+  if (tipo) {
+    parametros.push(tipo);
+    sql += ' AND tipo = $' + parametros.length;
+  }
+  if (variedad) {
+    parametros.push(variedad);
+    sql += ' AND variedad = $' + parametros.length;
+  }
   if (q) {
-    sql += ` AND (nombre ILIKE '%${q}%' OR descripcion ILIKE '%${q}%')`;
+    parametros.push(`%${q}%`);
+    sql += ' AND (nombre ILIKE $' + parametros.length + ' OR descripcion ILIKE $' + parametros.length + ')';
   }
   sql += ' ORDER BY tipo, variedad NULLS FIRST, id';
 
-  const { rows } = await db.query<Producto>(sql);
+  const { rows } = await db.query<Producto>(sql, parametros);
 
   return rows.map((p) => ({ ...p, precio: calcularPrecio(p) }));
 }
 
 /** Obtiene un producto por id. */
 export async function obtener(id: Id): Promise<ProductoConPrecio | null> {
-  // FALLA: inyección SQL en el id.
-  const { rows } = await db.query<Producto>(`SELECT * FROM productos WHERE id = '${id}'`);
+  const { rows } = await db.query<Producto>(
+    'SELECT * FROM productos WHERE id = $1',
+    [id]
+  );
   if (!rows[0]) return null;
   return { ...rows[0], precio: calcularPrecio(rows[0]) };
 }
@@ -110,7 +127,7 @@ export async function eliminar(id: Id): Promise<Producto | null> {
   return rows[0] || null;
 }
 
-/** Lista las variedades disponibles en el catálogo. */
+/** Lista las variedades disponibles en el catÃ¡logo. */
 export async function variedades(): Promise<string[]> {
   const { rows } = await db.query<{ variedad: string }>(
     "SELECT DISTINCT variedad FROM productos WHERE variedad IS NOT NULL ORDER BY variedad"

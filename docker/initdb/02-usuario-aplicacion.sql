@@ -6,19 +6,19 @@
 -- La corrección es cambiar DB_USER/DB_PASSWORD por este usuario:
 --
 --     DB_USER: origen_app
---     DB_PASSWORD: origen_app_2024
+--     DB_PASSWORD: valor configurado en .env
 --
 -- Este usuario NO es superusuario: no puede crear bases, usuarios ni tocar
 -- el esquema. Sólo puede leer y escribir datos del catálogo.
 -- =============================================================================
 
-DO $$
-BEGIN
-    IF NOT EXISTS (SELECT FROM pg_catalog.pg_roles WHERE rolname = 'origen_app') THEN
-        CREATE ROLE origen_app LOGIN PASSWORD 'origen_app_2024';
-    END IF;
-END
-$$;
+\getenv app_password DB_PASSWORD
+
+SELECT 'CREATE ROLE origen_app LOGIN'
+WHERE NOT EXISTS (SELECT FROM pg_catalog.pg_roles WHERE rolname = 'origen_app')
+\gexec
+
+ALTER ROLE origen_app WITH LOGIN PASSWORD :'app_password';
 
 GRANT CONNECT ON DATABASE origen TO origen_app;
 GRANT USAGE ON SCHEMA public TO origen_app;

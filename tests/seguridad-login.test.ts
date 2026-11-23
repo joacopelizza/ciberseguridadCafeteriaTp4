@@ -40,12 +40,8 @@ describe('Seguridad · Login', () => {
   test('los mensajes de login son genéricos (sin enumeración de usuarios)', async () => {
     await crearUsuarioDePrueba('sec_enum', 'Sec_Clave_2024!', 'barista');
 
-    const inexistente = await request(app)
-      .post('/api/auth/login')
-      .send({ username: 'usuario-que-no-existe-xyz', password: 'x' });
-    const contraseñaIncorrecta = await request(app)
-      .post('/api/auth/login')
-      .send({ username: 'sec_enum', password: 'contraseña-equivocada' });
+    const inexistente = await login(agente(), 'usuario-que-no-existe-xyz', 'x');
+    const contraseñaIncorrecta = await login(agente(), 'sec_enum', 'contraseña-equivocada');
 
     assert.equal(
       inexistente.body.error,
@@ -72,5 +68,34 @@ describe('Seguridad · Login', () => {
   test('el login NO acepta el payload que comenta la contraseña', async () => {
     const res = await login(agente(), "admin'--", 'cualquiera');
     assert.notEqual(res.status, 200, 'El login aceptó "admin\'--" sin contraseña válida.');
+  });
+});
+
+describe('Seguridad · CSRF en login', () => {
+  test('el inicio de sesión requiere token anti-CSRF', async () => {
+    const res = await request(app)
+      .post('/api/auth/login')
+      .send({ username: 'admin', password: 'cualquiera' });
+
+    assert.equal(res.status, 403, 'El endpoint de login aceptó una petición sin token anti-CSRF.');
+  });
+});
+
+describe('Seguridad · respuestas de usuarios', () => {
+  after(async () => {
+    await limpiarDatosDePrueba();
+  });
+
+  test('la API administrativa no devuelve hashes de contraseñas', async () => {
+    await crearUsuarioDePrueba('sec_hash_api', 'Sec_Clave_2026!', 'admin');
+    const http = agente();
+    const sesion = await login(http, 'sec_hash_api', 'Sec_Clave_2026!');
+    assert.equal(sesion.status, 200);
+
+    const res = await http.get('/api/admin/usuarios');
+    assert.equal(res.status, 200);
+    assert.ok(Array.isArray(res.body.usuarios));
+    assert.ok(res.body.usuarios.length > 0);
+    assert.ok(res.body.usuarios.every((usuario: Record<string, unknown>) => !('password' in usuario)));
   });
 });

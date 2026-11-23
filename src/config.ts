@@ -21,21 +21,8 @@ export default {
     host: process.env.DB_HOST || 'db',
     port: Number(process.env.DB_PORT || 5432),
     database: process.env.DB_NAME || 'origen',
-    // FALLA: la aplicación se conecta con el superusuario de la base de datos
-    // (mínimos privilegios). Existe un usuario `origen_app` con permisos
-    // reducidos para usar como corrección.
-    user: process.env.DB_USER || 'postgres',
-    password: process.env.DB_PASSWORD || 'postgres',
-  },
-
-  // FALLA: secreto fijo y predecible, escrito en el código.
-  // Se necesita para firmar el token anti-CSRF (corrección del CSRF).
-  sessionSecret: 'origen-cafe-2024',
-
-  // FALLA: credenciales por defecto que nunca se cambian.
-  credencialesPorDefecto: {
-    username: 'admin',
-    password: 'admin',
+    user: process.env.DB_USER || 'origen_app',
+    password: process.env.DB_PASSWORD || '',
   },
 
   uploadsDir: process.env.UPLOADS_DIR || path.join(__dirname, '..', 'uploads'),

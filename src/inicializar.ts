@@ -1,4 +1,5 @@
 import * as db from './db';
+import bcrypt from 'bcryptjs';
 import { CATALOGO } from './catalogo';
 import type { Rol } from './tipos';
 
@@ -12,55 +13,75 @@ interface UsuarioInicial {
 /**
  * Carga los datos iniciales (usuarios y catálogo) si la base está vacía.
  *
- * FALLA — Almacenamiento inseguro de credenciales:
- * las contraseñas de los usuarios se guardan en TEXTO PLANO.
- * La corrección es hashear con bcrypt + salt por usuario
- * (bcryptjs ya está instalado como dependencia del proyecto).
+ * Las contraseñas se guardan con bcrypt. Si una base de datos existente aún
+ * conserva una contraseña en texto plano, se migra sin cambiar su valor.
  */
 
 export const USUARIOS_INICIALES: UsuarioInicial[] = [
   {
     username: 'admin',
-    password: 'admin',
+    password: process.env.ADMIN_INITIAL_PASSWORD || '',
     rol: 'admin',
     nombre: 'Administración',
   },
   {
     username: 'valentina',
-    password: 'origen2024',
+    password: process.env.OWNER_INITIAL_PASSWORD || '',
     rol: 'admin',
     nombre: 'Valentina',
   },
   {
     username: 'barista',
-    password: 'cafe123',
+    password: process.env.BARISTA_INITIAL_PASSWORD || '',
     rol: 'barista',
     nombre: 'Barista',
   },
   {
     username: 'mozo',
-    password: 'mozo123',
+    password: process.env.MOZO_INITIAL_PASSWORD || '',
     rol: 'mozo',
     nombre: 'Mozo de sala',
   },
   {
     username: 'cliente',
-    password: 'cliente',
+    password: process.env.CLIENT_INITIAL_PASSWORD || '',
     rol: 'cliente',
     nombre: 'Cliente',
   },
 ];
 
 export async function inicializarBase(): Promise<void> {
+  for (const usuario of USUARIOS_INICIALES) {
+    if (usuario.password.length < 24 || usuario.password.startsWith('CAMBIA_')) {
+      throw new Error(`Falta configurar una contraseña inicial segura para ${usuario.username}.`);
+    }
+  }
+
   // --- Usuarios -------------------------------------------------------------
   for (const usuario of USUARIOS_INICIALES) {
-    // FALLA: la contraseña se guarda tal cual, sin hash ni salt.
+    const { rows: existentes } = await db.query<{ password: string }>(
+      'SELECT password FROM usuarios WHERE username = $1',
+      [usuario.username]
+    );
+    const passwordActual = existentes[0]?.password;
+    if (passwordActual && /^\$2[aby]\$\d{2}\$/.test(passwordActual)) continue;
+
+    const passwordHash = await bcrypt.hash(passwordActual || usuario.password, 12);
     await db.query(
       `INSERT INTO usuarios (username, password, rol, nombre)
        VALUES ($1, $2, $3, $4)
-       ON CONFLICT (username) DO NOTHING`,
-      [usuario.username, usuario.password, usuario.rol, usuario.nombre]
+       ON CONFLICT (username) DO UPDATE SET password = EXCLUDED.password`,
+      [usuario.username, passwordHash, usuario.rol, usuario.nombre]
     );
+  }
+
+  const { rows: usuariosExistentes } = await db.query<{ id: number; password: string }>(
+    'SELECT id, password FROM usuarios'
+  );
+  for (const usuario of usuariosExistentes) {
+    if (/^\$2[aby]\$\d{2}\$/.test(usuario.password)) continue;
+    const passwordHash = await bcrypt.hash(usuario.password, 12);
+    await db.query('UPDATE usuarios SET password = $1 WHERE id = $2', [passwordHash, usuario.id]);
   }
 
   // --- Catálogo -------------------------------------------------------------

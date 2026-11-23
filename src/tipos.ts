@@ -59,7 +59,7 @@ export type UsuarioSesion = Pick<Usuario, 'id' | 'username' | 'rol' | 'nombre'>;
 export interface Sesion {
   usuario: UsuarioSesion;
   creadaEn: number;
-  expiraEn: number | null;
+  expiraEn: number;
 }
 
 /** Fila de la tabla `pedidos`. */

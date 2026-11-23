@@ -16,9 +16,7 @@
 
 import { test, before, after, describe } from 'node:test';
 import assert from 'node:assert/strict';
-import request from 'supertest';
-
-import { app, prepararBase, crearUsuarioDePrueba, limpiarDatosDePrueba } from './helpers';
+import { agente, prepararBase, tokenCsrf, crearUsuarioDePrueba, limpiarDatosDePrueba } from './helpers';
 
 describe('Seguridad · Fuerza bruta', () => {
   before(async () => {
@@ -36,11 +34,14 @@ describe('Seguridad · Fuerza bruta', () => {
     const INTENTOS = 10;
     let bloqueado = false;
     let statusBloqueo = null;
+    const http = agente();
+    const token = await tokenCsrf(http);
+    assert.ok(token, 'No se pudo obtener el token CSRF para probar el login.');
 
     for (let i = 0; i < INTENTOS; i++) {
-      const res = await request(app)
+      const res = await http
         .post('/api/auth/login')
-        .send({ username: 'sec_brute', password: `intento-fallido-${i}` });
+        .send({ username: 'sec_brute', password: `intento-fallido-${i}`, _csrf: token });
 
       if (res.status !== 401) {
         bloqueado = true;
@@ -61,9 +62,12 @@ describe('Seguridad · Fuerza bruta', () => {
   });
 
   test('el login correcto sigue funcionando después de un bloqueo', async () => {
-    const res = await request(app)
+    const http = agente();
+    const token = await tokenCsrf(http);
+    assert.ok(token, 'No se pudo obtener el token CSRF para probar el login.');
+    const res = await http
       .post('/api/auth/login')
-      .send({ username: 'sec_brute', password: 'Sec_Clave_2024!' });
+      .send({ username: 'sec_brute', password: 'Sec_Clave_2024!', _csrf: token });
 
     assert.ok(
       res.status === 200 || res.status === 429 || res.status === 403 || res.status === 423,

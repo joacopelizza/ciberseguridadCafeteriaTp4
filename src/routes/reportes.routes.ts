@@ -1,7 +1,11 @@
 import express from 'express';
 import * as reportes from '../services/reportes.service';
+import { requiereSesion, requiereRol } from '../middleware/auth';
 
 const router = express.Router();
+
+// Los datos de ventas y facturación están reservados a administración.
+router.use(requiereSesion, requiereRol('admin'));
 
 /** GET /api/reportes/facturacion — cuánto se facturó. */
 router.get('/facturacion', async (req, res, next) => {
@@ -39,12 +43,7 @@ router.get('/ticket-promedio', async (req, res, next) => {
   }
 });
 
-/**
- * GET /api/reportes/ventas-por-variedad?variedad=
- *
- * FALLA — Inyección SQL: el origen se concatena en la consulta.
- * No se exige autenticación ni rol para ver la facturación.
- */
+/** GET /api/reportes/ventas-por-variedad?variedad= — filtra un origen permitido. */
 router.get('/ventas-por-variedad', async (req, res, next) => {
   try {
     const variedad = (req.query.variedad as string | undefined) || '';

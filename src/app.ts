@@ -1,7 +1,9 @@
 import path from 'path';
 import express from 'express';
+import helmet from 'helmet';
 
 import config from './config';
+import { emitirTokenCsrf, verificarCsrf } from './middleware/csrf';
 import { rutaNoEncontrada, manejadorErrores } from './middleware/errores';
 import authRoutes from './routes/auth.routes';
 import productosRoutes from './routes/productos.routes';
@@ -13,16 +15,20 @@ import debugRoutes from './routes/debug.routes';
 
 const app = express();
 
-/**
- * FALLA — Ajustes de configuración (OWASP A05:2021)
- *
- * Faltan:
- *  - helmet (cabeceras de seguridad: CSP, X-Content-Type-Options, HSTS...)
- *  - límite de tamaño del cuerpo más estricto por ruta
- *  - rate limiting global
- *  - política de CORS restringida al propio origen
- *  - helmet CSP además sirve como capa extra frente al XSS
- */
+/** Cabeceras de seguridad globales y límites para los cuerpos de petición. */
+app.use(helmet({
+  contentSecurityPolicy: {
+    directives: {
+      defaultSrc: ["'self'"],
+      scriptSrc: ["'self'"],
+      styleSrc: ["'self'"],
+      imgSrc: ["'self'", 'data:'],
+      objectSrc: ["'none'"],
+      baseUri: ["'self'"],
+      frameAncestors: ["'none'"],
+    },
+  },
+}));
 app.use(express.json({ limit: '1mb' }));
 app.use(express.urlencoded({ extended: true }));
 
@@ -36,6 +42,9 @@ app.use(express.static(path.join(__dirname, 'public')));
 app.get('/api/salud', (req, res) => {
   res.json({ ok: true, servicio: 'cafeteria-origen', hora: new Date().toISOString() });
 });
+
+app.get('/api/csrf-token', emitirTokenCsrf);
+app.use('/api', verificarCsrf);
 
 app.use('/api/auth', authRoutes);
 app.use('/api/productos', productosRoutes);

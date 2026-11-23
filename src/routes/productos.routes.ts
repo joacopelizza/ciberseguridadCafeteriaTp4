@@ -1,26 +1,17 @@
 import express from 'express';
 import * as catalogo from '../services/catalogo.service';
 import type { FiltrosCatalogo } from '../services/catalogo.service';
+import { idPositivo } from '../validacion';
 
 const router = express.Router();
 
-/**
- * GET /api/productos?tipo=&variedad=&q=
- * Lista el catálogo con filtros opcionales.
- *
- * FALLA — Inyección SQL: los filtros llegan concatenados al texto SQL
- * (ver services/catalogo.service.ts).
- *
- * FALLA — XSS reflejado: la respuesta incluye los filtros que mandó el
- * cliente y el sitio web los pinta con innerHTML. Un `<script>` en `q` se
- * ejecuta en el navegador de quien hizo la búsqueda.
- */
+/** GET /api/productos?tipo=&variedad=&q= — catálogo con filtros validados. */
 router.get('/', async (req, res, next) => {
   try {
     const productos = await catalogo.listar(req.query as FiltrosCatalogo);
     res.json({
       productos,
-      // Se devuelve el eco de los filtros: es el vector del XSS reflejado.
+      // Se devuelven los filtros para que la interfaz pueda conservarlos.
       filtros: {
         tipo: req.query.tipo || '',
         variedad: req.query.variedad || '',
@@ -46,16 +37,15 @@ router.get('/variedades', async (req, res, next) => {
  * GET /api/productos/:id
  * Devuelve un producto.
  *
- * FALLA — Inyección SQL en el id (el id se mete en la consulta entre comillas).
- * FALLA — XSS reflejado: el mensaje de error incluye el id recibido.
+ * El id se consulta como parámetro y la respuesta de error no lo refleja.
  */
 router.get('/:id', async (req, res, next) => {
   try {
-    const producto = await catalogo.obtener(req.params.id);
+    const id = idPositivo(req.params.id);
+    if (!id) return res.status(400).json({ error: 'ID de producto no válido.' });
+    const producto = await catalogo.obtener(id);
     if (!producto) {
-      return res
-        .status(404)
-        .json({ error: `No existe el producto "${req.params.id}".` });
+      return res.status(404).json({ error: 'Producto no encontrado.' });
     }
     res.json(producto);
   } catch (err) {

@@ -1,10 +1,11 @@
-import { test, before, describe } from 'node:test';
+import { test, before, after, describe } from 'node:test';
 import assert from 'node:assert/strict';
 import {
   agente,
   prepararBase,
   login,
   crearUsuarioDePrueba,
+  borrarUsuarioDePrueba,
   postConToken,
 } from './helpers';
 
@@ -19,6 +20,13 @@ import {
 describe('Autenticación', () => {
   before(async () => {
     await prepararBase();
+  });
+
+  after(async () => {
+    await borrarUsuarioDePrueba('func_admin');
+    await borrarUsuarioDePrueba('func_barista');
+    await borrarUsuarioDePrueba('func_mal');
+    await borrarUsuarioDePrueba('func_logout');
   });
 
   test('el login con credenciales válidas devuelve la sesión', async () => {

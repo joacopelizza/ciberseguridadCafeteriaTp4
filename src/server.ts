@@ -8,6 +8,7 @@ export async function arrancar(): Promise<void> {
     console.log('[origen] datos iniciales verificados en la base de datos');
   } catch (err) {
     console.error('[origen] no se pudieron cargar los datos iniciales:', (err as Error).message);
+    process.exit(1);
   }
 
   app.listen(config.port, () => {

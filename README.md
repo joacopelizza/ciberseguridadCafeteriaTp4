@@ -1,20 +1,33 @@
 # ☕ Cafetería Origen — proyecto didáctico de Ciberseguridad
 
-> Sitio web + API de una cafetería de especialidad **deliberadamente vulnerable**,
-> para el práctico de **Redes y Seguridad (Programación IV)**.
+> Sitio web + API de una cafetería de especialidad para el práctico de
+> **Redes y Seguridad (Programación IV)**. La versión inicial tenía fallas
+> deliberadas; esta copia incorpora correcciones de seguridad.
 >
 > La historia es la de **Valentina**, que abrió una cafetería de especialidad y
 > necesita ordenar los pedidos que hoy anota en un cuaderno.
 
-El proyecto **funciona**: la web anda, la API responde, los pedidos se calculan
-y los tests pasan. Sobre esa base hay **fallas de seguridad reales** (OWASP Top 10)
-que los alumnos tienen que encontrar, observar, explicar y corregir.
+El sitio web y la API permiten gestionar el catálogo, los pedidos y los
+reportes. Las pruebas funcionales y de seguridad verifican esta versión.
 
 ---
 
 ## 1. Levantar el proyecto
 
 Requisitos: **Docker Desktop** (o Docker Engine + Compose v2).
+
+Antes del primer arranque, generá `.env` desde la plantilla. En PowerShell,
+desde la carpeta del proyecto, ejecutá:
+
+```powershell
+.\scripts\generar-env.ps1
+```
+
+El script crea siete secretos aleatorios únicos: cinco para las cuentas
+iniciales y dos para PostgreSQL. No sobrescribe un `.env` existente. En otros
+entornos, copiá `.env.example` a `.env` y completá los siete valores con
+secretos aleatorios de al menos 24 caracteres. La app se niega a iniciar si las
+claves iniciales siguen vacías. `.env` está excluido de Git.
 
 ```bash
 cd cafeteria-origen
@@ -90,15 +103,15 @@ El objetivo es que termine en `✔` sin que se rompan los tests.
 
 ## 2. Usuarios de prueba
 
-| Usuario | Contraseña | Rol | Qué sirve para |
-|---|---|---|---|
-| `admin` | `admin` | admin | Credencial **por defecto** (falla de configuración) |
-| `valentina` | `origen2024` | admin | La dueña del negocio |
-| `barista` | `cafe123` | barista | Usuario legítimo no administrador |
-| `mozo` | `mozo123` | mozo | Personal de sala |
-| `cliente` | `cliente` | cliente | Para probar la **escalada de privilegios** |
+| Usuario | Rol | Qué sirve para |
+|---|---|---|
+| `admin` | admin | Administración |
+| `valentina` | admin | Dueña del negocio |
+| `barista` | barista | Personal de barra |
+| `mozo` | mozo | Personal de sala |
+| `cliente` | cliente | Comprobar restricciones de rol |
 
-Las contraseñas están en **texto plano** en la base (falla intencional).
+Las contraseñas iniciales se configuran mediante cinco variables `*_INITIAL_PASSWORD` en `.env`. La base almacena hashes bcrypt. Cambiar estas variables después de crear las cuentas no rota las contraseñas ya existentes.
 
 ---
 
@@ -113,7 +126,7 @@ cafeteria-origen/
 ├── src/
 │   ├── server.ts               # arranque
 │   ├── app.ts                  # Express, middlewares, rutas
-│   ├── config.ts               # configuración  ← secretos hardcodeados (falla)
+│   ├── config.ts               # valida la configuración y carga secretos desde variables de entorno
 │   ├── db.ts                   # pool de PostgreSQL
 │   ├── catalogo.ts             # catálogo y cálculo de precios
 │   ├── inicializar.ts          # carga inicial de datos
@@ -143,14 +156,14 @@ cafeteria-origen/
 | GET | `/api/productos/variedades` | Orígenes disponibles |
 | GET | `/api/productos/:id` | Un producto |
 | POST | `/api/pedidos` | Crear pedido (devuelve el total) |
-| GET | `/api/pedidos?mesa=` | Pedidos de todas las mesas |
-| GET | `/api/pedidos/:id` | Pedido con sus items |
-| PATCH | `/api/pedidos/:id/estado` | Cambiar estado |
-| GET | `/api/reportes/facturacion` | Total facturado |
-| GET | `/api/reportes/cantidad-vendida` | Unidades por tipo |
-| GET | `/api/reportes/mas-vendido` | Producto más vendido |
-| GET | `/api/reportes/ticket-promedio` | Ticket promedio |
-| GET | `/api/reportes/ventas-por-variedad?variedad=` | Ventas por origen |
+| GET | `/api/pedidos?mesa=` | Pedidos de todas las mesas (admin, barista o mozo autenticado) |
+| GET | `/api/pedidos/:id` | Pedido con sus items (personal autenticado) |
+| PATCH | `/api/pedidos/:id/estado` | Cambiar estado (personal autenticado) |
+| GET | `/api/reportes/facturacion` | Total facturado (admin autenticado) |
+| GET | `/api/reportes/cantidad-vendida` | Unidades por tipo (admin autenticado) |
+| GET | `/api/reportes/mas-vendido` | Producto más vendido (admin autenticado) |
+| GET | `/api/reportes/ticket-promedio` | Ticket promedio (admin autenticado) |
+| GET | `/api/reportes/ventas-por-variedad?variedad=` | Ventas por origen (admin autenticado) |
 | GET | `/api/comentarios` · POST `/api/comentarios` | Reseñas |
 | POST | `/api/auth/login` · `/api/auth/logout` · GET `/api/auth/yo` | Sesión |
 | — | `/api/admin/*` | Panel (usuarios, productos, conexión, subida de archivos) |
@@ -168,10 +181,11 @@ El catálogo son **20 productos**: 9 espressos + 9 filtrados + 2 de pastelería.
 
 ---
 
-## 5. Las fallas que hay que encontrar
+## 5. Vulnerabilidades de la versión inicial
 
 Están alineadas con las planillas de seguridad del apunte y con OWASP Top 10.
-La tabla es un resumen; el **inventario detallado con archivo y línea** está en
+La tabla conserva el inventario de la consigna y describe el punto de partida,
+no el estado corregido de esta copia. El **inventario detallado** está en
 [`VULNERABILIDADES.md`](VULNERABILIDADES.md).
 
 | # | Falla | Dónde | Control del checklist |

@@ -1,14 +1,28 @@
-import { test, before, describe } from 'node:test';
+import { test, before, after, describe } from 'node:test';
 import assert from 'node:assert/strict';
-import { agente, prepararBase, postConToken, productoPorNombre } from './helpers';
+import { agente, prepararBase, postConToken, productoPorNombre, crearUsuarioDePrueba, borrarUsuarioDePrueba, login } from './helpers';
 
 describe('Reportes', () => {
+  const administrador = agente();
+
   before(async () => {
     await prepararBase();
+    await crearUsuarioDePrueba('func_reportes_admin', 'Clave_reportes_2026!', 'admin');
+    const sesion = await login(administrador, 'func_reportes_admin', 'Clave_reportes_2026!');
+    assert.equal(sesion.status, 200);
+  });
+
+  after(async () => {
+    await borrarUsuarioDePrueba('func_reportes_admin');
+  });
+
+  test('los reportes no se exponen a visitantes sin sesión', async () => {
+    const res = await agente().get('/api/reportes/facturacion');
+    assert.equal(res.status, 401);
   });
 
   test('GET /api/reportes/facturacion devuelve el total facturado', async () => {
-    const res = await agente().get('/api/reportes/facturacion');
+    const res = await administrador.get('/api/reportes/facturacion');
     assert.equal(res.status, 200);
     assert.equal(typeof Number(res.body.facturado), 'number');
     assert.equal(typeof Number(res.body.pedidos), 'number');
@@ -16,7 +30,7 @@ describe('Reportes', () => {
 
   test('la facturación crece al crear un pedido', async () => {
     const brasil = await productoPorNombre('Espresso Pocillo Brasil'); // $5020
-    const antes = await agente().get('/api/reportes/facturacion');
+    const antes = await administrador.get('/api/reportes/facturacion');
 
     const pedido = await postConToken(agente(), '/api/pedidos', {
       mesa: '9',
@@ -31,7 +45,7 @@ describe('Reportes', () => {
       `el total del pedido está mal calculado (${pedido.body.total})`
     );
 
-    const despues = await agente().get('/api/reportes/facturacion');
+    const despues = await administrador.get('/api/reportes/facturacion');
     const antesTotal = Number(antes.body.facturado);
     const despuesTotal = Number(despues.body.facturado);
 
@@ -49,13 +63,13 @@ describe('Reportes', () => {
   });
 
   test('GET /api/reportes/cantidad-vendida agrupa por tipo', async () => {
-    const res = await agente().get('/api/reportes/cantidad-vendida');
+    const res = await administrador.get('/api/reportes/cantidad-vendida');
     assert.equal(res.status, 200);
     assert.equal(typeof res.body.cantidadVendida, 'object');
   });
 
   test('GET /api/reportes/mas-vendido devuelve el producto más vendido', async () => {
-    const res = await agente().get('/api/reportes/mas-vendido');
+    const res = await administrador.get('/api/reportes/mas-vendido');
     assert.equal(res.status, 200);
     if (res.body.producto) {
       assert.ok(res.body.producto.nombre);
@@ -64,7 +78,7 @@ describe('Reportes', () => {
   });
 
   test('GET /api/reportes/ventas-por-variedad filtra por origen', async () => {
-    const res = await agente().get('/api/reportes/ventas-por-variedad?variedad=Brasil');
+    const res = await administrador.get('/api/reportes/ventas-por-variedad?variedad=Brasil');
     assert.equal(res.status, 200);
     assert.ok(Array.isArray(res.body.ventas));
   });

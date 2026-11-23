@@ -25,7 +25,12 @@ COPY tests ./tests
 COPY docker-compose.yml Dockerfile ./
 
 # Carpeta de archivos subidos
-RUN mkdir -p /app/uploads
+RUN mkdir -p /app/uploads \
+    && addgroup -S app \
+    && adduser -S app -G app \
+    && chown -R app:app /app
+
+USER app
 
 EXPOSE 3000
 
