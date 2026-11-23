@@ -4,10 +4,26 @@ import { requiereSesion, requiereRol } from '../middleware/auth';
 
 const router = express.Router();
 
+// ============================================================
+// SECCIÓN 1: PROTECCIÓN DE REPORTES ADMINISTRATIVOS
+//
+// COMMIT RECOMENDADO:
+// security: exigir rol administrador para los reportes
+// ============================================================
 // Los datos de ventas y facturación están reservados a administración.
 router.use(requiereSesion, requiereRol('admin'));
 
+// ============================================================
+// SECCIÓN 2: CONSULTAS DE FACTURACIÓN, VENTAS Y TICKET PROMEDIO
+//
+// COMMIT RECOMENDADO:
+// feat: consultar métricas y ventas por origen
+// ============================================================
 /** GET /api/reportes/facturacion — cuánto se facturó. */
+// ============================================================
+// CÓDIGO ORIGINAL DEL REPOSITORIO DEL TP
+// Funcionalidad: endpoints de métricas y reportes de ventas
+// ============================================================
 router.get('/facturacion', async (req, res, next) => {
   try {
     res.json(await reportes.facturacion());

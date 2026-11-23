@@ -2,6 +2,16 @@
 import type { Numerico } from '../tipos';
 import { crearErrorHttp, valoresValidos } from '../validacion';
 
+// ============================================================
+// SECCIÓN 1: TIPOS DE DATOS DE REPORTES
+//
+// COMMIT RECOMENDADO:
+// refactor: tipar las métricas de reportes
+// ============================================================
+// ============================================================
+// CÓDIGO ORIGINAL DEL REPOSITORIO DEL TP
+// Funcionalidad: tipos compartidos para los reportes
+// ============================================================
 export interface Facturacion {
   facturado: Numerico;
   pedidos: Numerico;
@@ -21,6 +31,12 @@ export interface VentaPorVariedad {
   total: Numerico;
 }
 
+// ============================================================
+// SECCIÓN 2: CÁLCULO DE MÉTRICAS GENERALES DE VENTAS
+//
+// COMMIT RECOMENDADO:
+// feat: calcular facturación y productos más vendidos
+// ============================================================
 /**
  * Servicio de reportes.
  *
@@ -35,6 +51,10 @@ export interface VentaPorVariedad {
  */
 
 /** FacturaciÃ³n total: suma de los totales de todos los pedidos. */
+// ============================================================
+// CÓDIGO ORIGINAL DEL REPOSITORIO DEL TP
+// Funcionalidad: facturación, ventas por tipo y producto más vendido
+// ============================================================
 export async function facturacion(): Promise<Facturacion> {
   const { rows } = await db.query<Facturacion>(
     'SELECT COALESCE(SUM(total), 0) AS facturado, COUNT(*) AS pedidos FROM pedidos'
@@ -71,6 +91,12 @@ export async function masVendido(): Promise<ProductoMasVendido | null> {
   return rows[0] || null;
 }
 
+// ============================================================
+// SECCIÓN 3: VENTAS POR ORIGEN Y TICKET PROMEDIO
+//
+// COMMIT RECOMENDADO:
+// security: validar el origen consultado en reportes
+// ============================================================
 /** Ventas por origen (variedad). */
 export async function ventasPorVariedad(variedad: string): Promise<VentaPorVariedad[]> {
   if (!valoresValidos.variedades.includes(variedad as (typeof valoresValidos.variedades)[number])) {
@@ -89,6 +115,10 @@ export async function ventasPorVariedad(variedad: string): Promise<VentaPorVarie
 }
 
 /** Ticket promedio por pedido. */
+// ============================================================
+// CÓDIGO ORIGINAL DEL REPOSITORIO DEL TP
+// Funcionalidad: cálculo del ticket promedio por pedido
+// ============================================================
 export async function ticketPromedio(): Promise<{ promedio: Numerico }> {
   const { rows } = await db.query<{ promedio: Numerico }>(
     'SELECT COALESCE(AVG(total), 0) AS promedio FROM pedidos'

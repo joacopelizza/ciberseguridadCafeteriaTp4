@@ -13,6 +13,12 @@ const limitarIntentosLogin = rateLimit({
   message: { error: 'Demasiados intentos. Esperá antes de volver a intentar.' },
 });
 
+// ============================================================
+// SECCIÓN 1: AUTENTICACIÓN Y CREACIÓN DE SESIÓN
+//
+// COMMIT RECOMENDADO:
+// security: proteger el login y limitar intentos fallidos
+// ============================================================
 /**
  * Inicio de sesión.
  *
@@ -21,6 +27,10 @@ const limitarIntentosLogin = rateLimit({
  */
 router.post('/login', limitarIntentosLogin, async (req, res, next) => {
   try {
+    // ============================================================
+    // CÓDIGO ORIGINAL DEL REPOSITORIO DEL TP
+    // Funcionalidad: lectura de credenciales y control de campos vacíos
+    // ============================================================
     const { username, password } = req.body || {};
 
     if (!username || !password) {
@@ -33,6 +43,10 @@ router.post('/login', limitarIntentosLogin, async (req, res, next) => {
       return res.status(401).json({ error: 'Usuario o contraseña incorrectos.' });
     }
 
+    // ============================================================
+    // CÓDIGO ORIGINAL DEL REPOSITORIO DEL TP
+    // Funcionalidad: creación de la sesión de aplicación y respuesta del login
+    // ============================================================
     crearSesion(req, res, {
       id: usuario.id,
       username: usuario.username,
@@ -54,6 +68,12 @@ router.post('/login', limitarIntentosLogin, async (req, res, next) => {
   }
 });
 
+// ============================================================
+// SECCIÓN 2: CIERRE E INVALIDACIÓN DE SESIÓN
+//
+// COMMIT RECOMENDADO:
+// security: invalidar la sesión al cerrar sesión
+// ============================================================
 /** Cierra la sesión en el servidor y limpia la cookie del navegador. */
 router.post('/logout', (req, res) => {
   destruirSesion(req);
@@ -66,8 +86,18 @@ router.post('/logout', (req, res) => {
   res.json({ mensaje: 'Sesión cerrada.' });
 });
 
+// ============================================================
+// SECCIÓN 3: CONSULTA DE LA IDENTIDAD ACTUAL
+//
+// COMMIT RECOMENDADO:
+// feat: exponer la identidad de la sesión actual
+// ============================================================
 /** Devuelve el usuario de la sesión actual. */
 router.get('/yo', (req, res) => {
+  // ============================================================
+  // CÓDIGO ORIGINAL DEL REPOSITORIO DEL TP
+  // Funcionalidad: consulta del usuario asociado a la sesión
+  // ============================================================
   const sesion = obtenerSesion(req);
   if (!sesion) {
     return res.status(401).json({ error: 'Necesitás iniciar sesión.' });

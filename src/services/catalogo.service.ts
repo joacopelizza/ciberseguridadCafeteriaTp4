@@ -3,6 +3,10 @@ import { calcularPrecio } from '../catalogo';
 import type { DatosProducto, Producto, ProductoConPrecio } from '../tipos';
 import { crearErrorHttp, textoDentroDeRango, valoresValidos } from '../validacion';
 
+// ============================================================
+// CÓDIGO ORIGINAL DEL REPOSITORIO DEL TP
+// Funcionalidad: tipos de entrada para filtros y productos
+// ============================================================
 /** Filtros del menÃº, tal como llegan en la query string. */
 export interface FiltrosCatalogo {
   tipo?: string;
@@ -29,6 +33,12 @@ type Id = number | string;
  * -----------------------------------------------------------------------------
  */
 
+// ============================================================
+// SECCIÓN 1: LISTADO, FILTROS Y CONSULTA DEL CATÁLOGO
+//
+// COMMIT RECOMENDADO:
+// security: parametrizar filtros y validar el catálogo público
+// ============================================================
 /** Lista productos aplicando los filtros del menÃº. */
 export async function listar(filtros: FiltrosCatalogo = {}): Promise<ProductoConPrecio[]> {
   const { tipo, variedad, q } = filtros;
@@ -61,6 +71,10 @@ export async function listar(filtros: FiltrosCatalogo = {}): Promise<ProductoCon
 
   const { rows } = await db.query<Producto>(sql, parametros);
 
+  // ============================================================
+  // CÓDIGO ORIGINAL DEL REPOSITORIO DEL TP
+  // Funcionalidad: agregar el precio calculado a cada producto
+  // ============================================================
   return rows.map((p) => ({ ...p, precio: calcularPrecio(p) }));
 }
 
@@ -70,11 +84,25 @@ export async function obtener(id: Id): Promise<ProductoConPrecio | null> {
     'SELECT * FROM productos WHERE id = $1',
     [id]
   );
+  // ============================================================
+  // CÓDIGO ORIGINAL DEL REPOSITORIO DEL TP
+  // Funcionalidad: devolver el producto con su precio calculado
+  // ============================================================
   if (!rows[0]) return null;
   return { ...rows[0], precio: calcularPrecio(rows[0]) };
 }
 
+// ============================================================
+// SECCIÓN 2: ALTA, EDICIÓN Y DESACTIVACIÓN DE PRODUCTOS
+//
+// COMMIT RECOMENDADO:
+// feat: gestionar productos del catálogo
+// ============================================================
 /** Crea un producto nuevo. */
+// ============================================================
+// CÓDIGO ORIGINAL DEL REPOSITORIO DEL TP
+// Funcionalidad: alta, edición y baja lógica de productos
+// ============================================================
 export async function crear(datos: DatosProductoEntrada): Promise<Producto> {
   const { rows } = await db.query<Producto>(
     `INSERT INTO productos (nombre, tipo, variedad, tamano, gramos, precio_base, precio_por_gramo, descripcion)
@@ -127,7 +155,17 @@ export async function eliminar(id: Id): Promise<Producto | null> {
   return rows[0] || null;
 }
 
+// ============================================================
+// SECCIÓN 3: ORÍGENES DISPONIBLES
+//
+// COMMIT RECOMENDADO:
+// feat: listar orígenes presentes en el catálogo
+// ============================================================
 /** Lista las variedades disponibles en el catÃ¡logo. */
+// ============================================================
+// CÓDIGO ORIGINAL DEL REPOSITORIO DEL TP
+// Funcionalidad: consulta de los orígenes disponibles
+// ============================================================
 export async function variedades(): Promise<string[]> {
   const { rows } = await db.query<{ variedad: string }>(
     "SELECT DISTINCT variedad FROM productos WHERE variedad IS NOT NULL ORDER BY variedad"

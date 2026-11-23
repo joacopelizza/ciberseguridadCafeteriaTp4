@@ -3,6 +3,16 @@
    Paleta cálida de café de especialidad: espresso, crema, terracota y verde.
    ============================================================================= */
 
+/* ============================================================
+ * SECCIÓN 1: VARIABLES DE DISEÑO Y ESTILOS BASE
+ *
+ * COMMIT RECOMENDADO:
+ * style: organizar tokens visuales y estilos base
+ * ============================================================ */
+/* ============================================================
+ * CÓDIGO ORIGINAL DEL REPOSITORIO DEL TP
+ * Funcionalidad: reglas visuales del sitio y del panel
+ * ============================================================ */
 :root {
   --tinta:        #241812;
   --tinta-suave:  #6a5145;
@@ -58,7 +68,12 @@ a  { color: var(--terracota); }
 .mt     { margin-top: 1.6rem; }
 .empty  { color: var(--tinta-suave); font-style: italic; padding: 1.4rem 0; }
 
-/* ============================== HEADER ============================== */
+/* ============================================================
+ * SECCIÓN 2: ENCABEZADO Y NAVEGACIÓN
+ *
+ * COMMIT RECOMENDADO:
+ * style: definir estilos del encabezado y navegación
+ * ============================================================ */
 .site-header {
   background: rgba(255, 253, 250, .88);
   backdrop-filter: blur(10px);
@@ -84,7 +99,12 @@ a  { color: var(--terracota); }
   border-radius: 999px; background: var(--papel);
 }
 
-/* ============================== HERO ============================== */
+/* ============================================================
+ * SECCIÓN 3: PRESENTACIÓN PRINCIPAL Y GRÁFICO DE TAZA
+ *
+ * COMMIT RECOMENDADO:
+ * style: diseñar la presentación principal del sitio
+ * ============================================================ */
 .hero { padding: clamp(3rem, 8vw, 6rem) 0 clamp(2.5rem, 6vw, 4.5rem); overflow: hidden; }
 .hero-inner { display: grid; grid-template-columns: 1.1fr .9fr; gap: clamp(2rem, 5vw, 4rem); align-items: center; }
 .hero h1 em { font-style: italic; color: var(--terracota); }
@@ -130,7 +150,12 @@ a  { color: var(--terracota); }
 .hero-badge strong { font-size: .85rem; }
 .hero-badge span { font-size: .74rem; color: var(--tinta-suave); }
 
-/* ============================== BOTONES ============================== */
+/* ============================================================
+ * SECCIÓN 4: BOTONES Y ACCIONES
+ *
+ * COMMIT RECOMENDADO:
+ * style: unificar la apariencia de botones y acciones
+ * ============================================================ */
 .btn {
   display: inline-flex; align-items: center; justify-content: center; gap: .45rem;
   padding: .68rem 1.25rem; border-radius: 999px; border: 1px solid transparent;
@@ -145,14 +170,24 @@ a  { color: var(--terracota); }
 .btn-block { width: 100%; }
 .btn-danger { background: var(--rojo); color: #fff; }
 
-/* ============================== SECCIONES ============================== */
+/* ============================================================
+ * SECCIÓN 5: CONTENEDORES Y TÍTULOS DE SECCIÓN
+ *
+ * COMMIT RECOMENDADO:
+ * style: organizar espaciado y encabezados de secciones
+ * ============================================================ */
 .section { padding: clamp(3rem, 7vw, 5.5rem) 0; }
 .section-alt { background: var(--crema-2); }
 .section-head { text-align: center; max-width: 60ch; margin: 0 auto 2.5rem; }
 .section-head-left { text-align: left; margin-left: 0; }
 .section-lead { color: var(--tinta-suave); }
 
-/* ============================== ORÍGENES ============================== */
+/* ============================================================
+ * SECCIÓN 6: TARJETAS DE ORÍGENES
+ *
+ * COMMIT RECOMENDADO:
+ * style: diseñar las tarjetas de origen del café
+ * ============================================================ */
 .origin-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(280px, 1fr)); gap: 1.3rem; }
 .origin-card {
   background: var(--papel); border: 1px solid var(--borde); border-radius: var(--radio);
@@ -168,7 +203,12 @@ a  { color: var(--terracota); }
 .origin-notes { font-size: .8rem; letter-spacing: .04em; text-transform: uppercase; color: var(--terracota); font-weight: 600; }
 .origin-detail { color: var(--tinta-suave); font-size: .95rem; margin: 0; }
 
-/* ============================== FILTROS ============================== */
+/* ============================================================
+ * SECCIÓN 7: FILTROS Y BÚSQUEDA DEL CATÁLOGO
+ *
+ * COMMIT RECOMENDADO:
+ * style: presentar filtros y búsqueda del catálogo
+ * ============================================================ */
 .filters { display: flex; flex-wrap: wrap; gap: 1rem; justify-content: space-between; align-items: flex-end; margin-bottom: 1.4rem; }
 .chips { display: flex; flex-wrap: wrap; gap: .45rem; }
 .chip {
@@ -179,7 +219,12 @@ a  { color: var(--terracota); }
 .chip.is-active { background: var(--tinta); border-color: var(--tinta); color: var(--crema); }
 .filter-fields { display: flex; gap: .8rem; flex-wrap: wrap; }
 
-/* ============================== FORMULARIOS ============================== */
+/* ============================================================
+ * SECCIÓN 8: CAMPOS Y CONTROLES DE FORMULARIO
+ *
+ * COMMIT RECOMENDADO:
+ * style: unificar estilos de formularios y campos
+ * ============================================================ */
 .field { display: flex; flex-direction: column; gap: .3rem; margin-bottom: .85rem; }
 .field > span { font-size: .78rem; font-weight: 700; letter-spacing: .05em; text-transform: uppercase; color: var(--tinta-suave); }
 .field input, .field select, .field textarea {
@@ -197,13 +242,23 @@ a  { color: var(--terracota); }
 .form-feedback.is-ok    { color: var(--verde); }
 .form-feedback.is-error { color: var(--rojo); }
 
-/* ============================== TARJETAS ============================== */
+/* ============================================================
+ * SECCIÓN 9: TARJETAS Y CONTENEDORES DE CONTENIDO
+ *
+ * COMMIT RECOMENDADO:
+ * style: organizar tarjetas y contenedores visuales
+ * ============================================================ */
 .card {
   background: var(--papel); border: 1px solid var(--borde);
   border-radius: var(--radio); padding: 1.5rem; box-shadow: var(--sombra-sm);
 }
 
-/* ============================== PRODUCTOS ============================== */
+/* ============================================================
+ * SECCIÓN 10: TARJETAS DE PRODUCTOS
+ *
+ * COMMIT RECOMENDADO:
+ * style: diseñar las tarjetas del catálogo
+ * ============================================================ */
 .result-summary { color: var(--tinta-suave); font-size: .9rem; margin-bottom: 1rem; }
 .product-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(250px, 1fr)); gap: 1.1rem; }
 .product-card {
@@ -224,7 +279,12 @@ a  { color: var(--terracota); }
 .product-desc { font-size: .88rem; color: var(--tinta-suave); margin: 0; flex: 1; }
 .product-card .btn { align-self: flex-start; margin-top: .3rem; }
 
-/* ============================== PEDIDO ============================== */
+/* ============================================================
+ * SECCIÓN 11: CARRITO Y RESUMEN DEL PEDIDO
+ *
+ * COMMIT RECOMENDADO:
+ * style: presentar el carrito y resumen de compra
+ * ============================================================ */
 .order-layout { display: grid; grid-template-columns: 1.25fr .75fr; gap: 1.6rem; align-items: start; }
 .cart { display: flex; flex-direction: column; gap: .6rem; margin-bottom: 1.3rem; }
 .cart-item {
@@ -251,7 +311,12 @@ a  { color: var(--terracota); }
 }
 .summary-total strong { font-family: var(--serif); font-size: 1.5rem; color: var(--terracota); }
 
-/* ============================== RESEÑAS ============================== */
+/* ============================================================
+ * SECCIÓN 12: FORMULARIO Y LISTADO DE RESEÑAS
+ *
+ * COMMIT RECOMENDADO:
+ * style: diseñar el formulario y listado de reseñas
+ * ============================================================ */
 .reviews-layout { display: grid; grid-template-columns: .8fr 1.2fr; gap: 1.6rem; align-items: start; }
 .reviews-list { display: flex; flex-direction: column; gap: .8rem; }
 .review {
@@ -263,7 +328,12 @@ a  { color: var(--terracota); }
 .review-stars { color: var(--dorado); letter-spacing: .1em; }
 .review-text { margin: 0; color: var(--tinta-suave); }
 
-/* ============================== FOOTER ============================== */
+/* ============================================================
+ * SECCIÓN 13: PIE DE PÁGINA
+ *
+ * COMMIT RECOMENDADO:
+ * style: completar los estilos del pie de página
+ * ============================================================ */
 .site-footer { background: var(--tinta); color: #d8cbbc; padding: 2.4rem 0; }
 .footer-inner { display: flex; justify-content: space-between; flex-wrap: wrap; gap: 1rem; }
 .site-footer strong { font-family: var(--serif); font-size: 1.2rem; color: var(--crema); }
@@ -271,7 +341,12 @@ a  { color: var(--terracota); }
 .site-footer a { color: var(--terracota-2); }
 .footer-meta { text-align: right; }
 
-/* ============================== ADMIN ============================== */
+/* ============================================================
+ * SECCIÓN 14: VISTAS Y COMPONENTES DEL PANEL ADMINISTRATIVO
+ *
+ * COMMIT RECOMENDADO:
+ * style: organizar los estilos del panel administrativo
+ * ============================================================ */
 .admin-body { background: #f4efe8; }
 .admin-main { padding: 2rem 0 4rem; }
 .admin-user { font-size: .86rem; color: var(--tinta-suave); text-align: right; }
@@ -318,7 +393,12 @@ td.num { text-align: right; font-variant-numeric: tabular-nums; }
 }
 .output:empty { display: none; }
 
-/* ============================== RESPONSIVE ============================== */
+/* ============================================================
+ * SECCIÓN 15: AJUSTES PARA PANTALLAS PEQUEÑAS
+ *
+ * COMMIT RECOMENDADO:
+ * style: adaptar el sitio a pantallas pequeñas
+ * ============================================================ */
 @media (max-width: 900px) {
   .hero-inner, .order-layout, .reviews-layout, .two-col { grid-template-columns: 1fr; }
   .hero-art { order: -1; min-height: 260px; }

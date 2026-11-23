@@ -12,6 +12,12 @@
 -- el esquema. Sólo puede leer y escribir datos del catálogo.
 -- =============================================================================
 
+-- ============================================================
+-- SECCIÓN 1: CREACIÓN DEL ROL DE APLICACIÓN CON CLAVE DEL ENTORNO
+--
+-- COMMIT RECOMENDADO:
+-- security: crear el usuario de aplicación con credenciales externas
+-- ============================================================
 \getenv app_password DB_PASSWORD
 
 SELECT 'CREATE ROLE origen_app LOGIN'
@@ -20,6 +26,16 @@ WHERE NOT EXISTS (SELECT FROM pg_catalog.pg_roles WHERE rolname = 'origen_app')
 
 ALTER ROLE origen_app WITH LOGIN PASSWORD :'app_password';
 
+-- ============================================================
+-- SECCIÓN 2: ASIGNACIÓN DE PERMISOS MÍNIMOS
+--
+-- COMMIT RECOMENDADO:
+-- security: limitar permisos del usuario de aplicación
+-- ============================================================
+-- ============================================================
+-- CÓDIGO ORIGINAL DEL REPOSITORIO DEL TP
+-- Funcionalidad: permisos de base de datos para la aplicación
+-- ============================================================
 GRANT CONNECT ON DATABASE origen TO origen_app;
 GRANT USAGE ON SCHEMA public TO origen_app;
 

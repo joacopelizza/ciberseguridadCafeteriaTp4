@@ -10,10 +10,24 @@ import { randomBytes } from 'crypto';
 import type { Sesion, UsuarioSesion } from '../tipos';
 import config from '../config';
 
+// ============================================================
+// SECCIÓN 1: ALMACÉN EN MEMORIA Y LECTURA DE COOKIES
+//
+// COMMIT RECOMENDADO:
+// security: preparar almacenamiento y lectura de sesiones
+// ============================================================
+// ============================================================
+// CÓDIGO ORIGINAL DEL REPOSITORIO DEL TP
+// Funcionalidad: almacenamiento en memoria de las sesiones
+// ============================================================
 export const sesiones = new Map<string, Sesion>();
 const TIEMPO_SESION = 30 * 60 * 1000;
 
 /** Lee las cookies de la petición (parser mínimo, sin dependencias). */
+// ============================================================
+// CÓDIGO ORIGINAL DEL REPOSITORIO DEL TP
+// Funcionalidad: lectura de cookies de la petición
+// ============================================================
 export function leerCookies(req: Request): Record<string, string> {
   const cookies: Record<string, string> = {};
   const header = req.headers.cookie;
@@ -28,6 +42,12 @@ export function leerCookies(req: Request): Record<string, string> {
   return cookies;
 }
 
+// ============================================================
+// SECCIÓN 2: CREACIÓN DE SESIONES Y COOKIE SEGURA
+//
+// COMMIT RECOMENDADO:
+// security: crear sesiones aleatorias con expiración
+// ============================================================
 /** Crea una sesión nueva para el usuario y setea la cookie. */
 export function crearSesion(req: Request, res: Response, usuario: UsuarioSesion): string {
   const id = randomBytes(32).toString('hex');
@@ -55,6 +75,12 @@ export function crearSesion(req: Request, res: Response, usuario: UsuarioSesion)
   return id;
 }
 
+// ============================================================
+// SECCIÓN 3: CONSULTA Y DESTRUCCIÓN DE SESIONES
+//
+// COMMIT RECOMENDADO:
+// security: validar vencimiento e invalidar sesiones cerradas
+// ============================================================
 /** Devuelve la sesión de la petición, si existe. */
 export function obtenerSesion(req: Request): Sesion | null {
   const cookies = leerCookies(req);
@@ -70,6 +96,10 @@ export function obtenerSesion(req: Request): Sesion | null {
 }
 
 /** Cierra la sesión en el servidor (debería llamarse en el logout). */
+// ============================================================
+// CÓDIGO ORIGINAL DEL REPOSITORIO DEL TP
+// Funcionalidad: eliminación de una sesión del almacenamiento
+// ============================================================
 export function destruirSesion(req: Request): void {
   const cookies = leerCookies(req);
   const id = cookies.sid;

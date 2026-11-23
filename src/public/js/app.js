@@ -15,7 +15,16 @@
     carrito: cargarCarrito(),
   };
 
-  /* ---------------------------------------------------------------- utils */
+  /* ============================================================
+   * SECCIÓN 1: UTILIDADES, API, CSRF Y PERSISTENCIA DEL CARRITO
+   *
+   * COMMIT RECOMENDADO:
+   * refactor: organizar utilidades y peticiones del cliente
+   * ============================================================ */
+  /* ============================================================
+   * CÓDIGO ORIGINAL DEL REPOSITORIO DEL TP
+   * Funcionalidad: selección de elementos y formato de moneda
+   * ============================================================ */
   function $(sel) { return document.querySelector(sel); }
 
   function money(valor) {
@@ -78,6 +87,10 @@
     });
   }
 
+  /* ============================================================
+   * CÓDIGO ORIGINAL DEL REPOSITORIO DEL TP
+   * Funcionalidad: persistencia local del carrito
+   * ============================================================ */
   function guardarCarrito() {
     try {
       localStorage.setItem(CARRITO_KEY, JSON.stringify(estado.carrito));
@@ -92,7 +105,16 @@
     }
   }
 
-  /* ------------------------------------------------------------- catálogo */
+  /* ============================================================
+   * SECCIÓN 2: CONSULTA Y PRESENTACIÓN DEL CATÁLOGO
+   *
+   * COMMIT RECOMENDADO:
+   * feat: mostrar catálogo y aplicar filtros de búsqueda
+   * ============================================================ */
+  /* ============================================================
+   * CÓDIGO ORIGINAL DEL REPOSITORIO DEL TP
+   * Funcionalidad: construcción de la consulta del catálogo
+   * ============================================================ */
   function urlCatalogo() {
     var params = new URLSearchParams();
     if (estado.tipo) params.set('tipo', estado.tipo);
@@ -153,7 +175,16 @@
     renderHtml($('#productos-grid'), '<p class="empty">No se pudo cargar el menú: ' + raw(mensaje || 'error desconocido') + '</p>');
   }
 
-  /* --------------------------------------------------------------- carrito */
+  /* ============================================================
+   * SECCIÓN 3: GESTIÓN DEL CARRITO Y SUS CANTIDADES
+   *
+   * COMMIT RECOMENDADO:
+   * feat: gestionar productos y cantidades del carrito
+   * ============================================================ */
+  /* ============================================================
+   * CÓDIGO ORIGINAL DEL REPOSITORIO DEL TP
+   * Funcionalidad: incorporación de productos al carrito
+   * ============================================================ */
   function agregarAlCarrito(productoId) {
     var existente = null;
     for (var i = 0; i < estado.carrito.length; i++) {
@@ -173,6 +204,10 @@
     renderCarrito();
   }
 
+  /* ============================================================
+   * CÓDIGO ORIGINAL DEL REPOSITORIO DEL TP
+   * Funcionalidad: ajuste de cantidades en el carrito
+   * ============================================================ */
   function cambiarCantidad(indice, delta) {
     var item = estado.carrito[indice];
     if (!item) return;
@@ -182,6 +217,10 @@
     renderCarrito();
   }
 
+  /* ============================================================
+   * CÓDIGO ORIGINAL DEL REPOSITORIO DEL TP
+   * Funcionalidad: eliminación de productos del carrito
+   * ============================================================ */
   function quitarDelCarrito(indice) {
     estado.carrito.splice(indice, 1);
     guardarCarrito();
@@ -229,7 +268,12 @@
     $('#resumen-total').textContent = money(total);
   }
 
-  /* ---------------------------------------------------------------- pedidos */
+  /* ============================================================
+   * SECCIÓN 4: ENVÍO DE PEDIDOS
+   *
+   * COMMIT RECOMENDADO:
+   * feat: enviar pedidos desde el sitio público
+   * ============================================================ */
   function enviarPedido(evento) {
     evento.preventDefault();
     var feedback = $('#pedido-feedback');
@@ -261,7 +305,12 @@
     });
   }
 
-  /* --------------------------------------------------------------- reseñas */
+  /* ============================================================
+   * SECCIÓN 5: CARGA Y PUBLICACIÓN DE RESEÑAS
+   *
+   * COMMIT RECOMENDADO:
+   * feat: publicar y mostrar reseñas de clientes
+   * ============================================================ */
   function cargarReseñas() {
     return api('/comentarios').then(function (resp) {
       var cont = $('#lista-resenas');
@@ -308,7 +357,16 @@
     });
   }
 
-  /* ------------------------------------------------------------- listeners */
+  /* ============================================================
+   * SECCIÓN 6: EVENTOS E INICIALIZACIÓN DEL SITIO
+   *
+   * COMMIT RECOMENDADO:
+   * refactor: centralizar eventos e inicio del sitio
+   * ============================================================ */
+  /* ============================================================
+   * CÓDIGO ORIGINAL DEL REPOSITORIO DEL TP
+   * Funcionalidad: eventos e inicialización del sitio público
+   * ============================================================ */
   function init() {
     window.__productos = {};
 

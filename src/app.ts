@@ -15,6 +15,12 @@ import debugRoutes from './routes/debug.routes';
 
 const app = express();
 
+// ============================================================
+// SECCIÓN 1: CABECERAS DE SEGURIDAD Y PARSEO DE PETICIONES
+//
+// COMMIT RECOMENDADO:
+// security: configurar protecciones globales de Express
+// ============================================================
 /** Cabeceras de seguridad globales y límites para los cuerpos de petición. */
 app.use(helmet({
   contentSecurityPolicy: {
@@ -32,13 +38,32 @@ app.use(helmet({
 app.use(express.json({ limit: '1mb' }));
 app.use(express.urlencoded({ extended: true }));
 
+// ============================================================
+// SECCIÓN 2: PUBLICACIÓN DEL SITIO Y ARCHIVOS SUBIDOS
+//
+// COMMIT RECOMENDADO:
+// feat: servir el sitio web y las imágenes subidas
+// ============================================================
 // Archivos subidos por el panel de administración.
+// ============================================================
+// CÓDIGO ORIGINAL DEL REPOSITORIO DEL TP
+// Funcionalidad: publicación de archivos e interfaz web estática
+// ============================================================
 app.use('/uploads', express.static(config.uploadsDir));
 
 // Sitio web estático
 app.use(express.static(path.join(__dirname, 'public')));
 
-// --- API --------------------------------------------------------------------
+// ============================================================
+// SECCIÓN 3: API, CSRF Y REGISTRO DE RUTAS
+//
+// COMMIT RECOMENDADO:
+// security: proteger y enrutar los endpoints de la API
+// ============================================================
+// ============================================================
+// CÓDIGO ORIGINAL DEL REPOSITORIO DEL TP
+// Funcionalidad: comprobación básica de disponibilidad del servicio
+// ============================================================
 app.get('/api/salud', (req, res) => {
   res.json({ ok: true, servicio: 'cafeteria-origen', hora: new Date().toISOString() });
 });
@@ -46,6 +71,10 @@ app.get('/api/salud', (req, res) => {
 app.get('/api/csrf-token', emitirTokenCsrf);
 app.use('/api', verificarCsrf);
 
+// ============================================================
+// CÓDIGO ORIGINAL DEL REPOSITORIO DEL TP
+// Funcionalidad: registro de las rutas de negocio de la API
+// ============================================================
 app.use('/api/auth', authRoutes);
 app.use('/api/productos', productosRoutes);
 app.use('/api/pedidos', pedidosRoutes);

@@ -5,7 +5,17 @@ import { idPositivo } from '../validacion';
 
 const router = express.Router();
 
+// ============================================================
+// SECCIÓN 1: LISTADO PÚBLICO Y FILTROS DEL CATÁLOGO
+//
+// COMMIT RECOMENDADO:
+// feat: consultar el catálogo con filtros validados
+// ============================================================
 /** GET /api/productos?tipo=&variedad=&q= — catálogo con filtros validados. */
+// ============================================================
+// CÓDIGO ORIGINAL DEL REPOSITORIO DEL TP
+// Funcionalidad: listado del catálogo y eco de los filtros
+// ============================================================
 router.get('/', async (req, res, next) => {
   try {
     const productos = await catalogo.listar(req.query as FiltrosCatalogo);
@@ -24,7 +34,17 @@ router.get('/', async (req, res, next) => {
   }
 });
 
+// ============================================================
+// SECCIÓN 2: OPCIONES DE ORIGEN PARA EL CATÁLOGO
+//
+// COMMIT RECOMENDADO:
+// feat: exponer los orígenes disponibles del catálogo
+// ============================================================
 /** GET /api/productos/variedades */
+// ============================================================
+// CÓDIGO ORIGINAL DEL REPOSITORIO DEL TP
+// Funcionalidad: listado de orígenes disponibles
+// ============================================================
 router.get('/variedades', async (req, res, next) => {
   try {
     res.json({ variedades: await catalogo.variedades() });
@@ -33,6 +53,12 @@ router.get('/variedades', async (req, res, next) => {
   }
 });
 
+// ============================================================
+// SECCIÓN 3: DETALLE DE PRODUCTO POR ID
+//
+// COMMIT RECOMENDADO:
+// feat: consultar un producto por identificador
+// ============================================================
 /**
  * GET /api/productos/:id
  * Devuelve un producto.

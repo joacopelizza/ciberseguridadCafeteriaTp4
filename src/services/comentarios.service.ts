@@ -2,7 +2,17 @@ import * as db from '../db';
 import type { Comentario } from '../tipos';
 import { crearErrorHttp } from '../validacion';
 
+// ============================================================
+// SECCIÓN 1: TIPOS, LECTURA Y CREACIÓN PÚBLICA DE RESEÑAS
+//
+// COMMIT RECOMENDADO:
+// security: validar y guardar reseñas como datos no confiables
+// ============================================================
 /** Datos de una reseña nueva, tal como llegan en el cuerpo de la petición. */
+// ============================================================
+// CÓDIGO ORIGINAL DEL REPOSITORIO DEL TP
+// Funcionalidad: estructura de los datos de una reseña
+// ============================================================
 export interface NuevoComentario {
   autor: string;
   texto: string;
@@ -26,6 +36,10 @@ export interface NuevoComentario {
  */
 
 /** Lista todos los comentarios, del más nuevo al más viejo. */
+// ============================================================
+// CÓDIGO ORIGINAL DEL REPOSITORIO DEL TP
+// Funcionalidad: consulta de reseñas ordenadas por fecha
+// ============================================================
 export async function listar(): Promise<Comentario[]> {
   const { rows } = await db.query<Comentario>(
     'SELECT * FROM comentarios ORDER BY id DESC'
@@ -45,6 +59,10 @@ export async function crear({ autor, texto, calificacion }: NuevoComentario): Pr
     throw crearErrorHttp(400, 'La calificación debe ser un entero entre 1 y 5.');
   }
 
+  // ============================================================
+  // CÓDIGO ORIGINAL DEL REPOSITORIO DEL TP
+  // Funcionalidad: inserción parametrizada de una reseña
+  // ============================================================
   const { rows } = await db.query<Comentario>(
     `INSERT INTO comentarios (autor, texto, calificacion)
      VALUES ($1, $2, $3)
@@ -54,7 +72,17 @@ export async function crear({ autor, texto, calificacion }: NuevoComentario): Pr
   return rows[0];
 }
 
+// ============================================================
+// SECCIÓN 2: ELIMINACIÓN ADMINISTRATIVA DE RESEÑAS
+//
+// COMMIT RECOMENDADO:
+// security: limitar la eliminación de reseñas a administradores
+// ============================================================
 /** Elimina un comentario. */
+// ============================================================
+// CÓDIGO ORIGINAL DEL REPOSITORIO DEL TP
+// Funcionalidad: eliminación de una reseña por identificador
+// ============================================================
 export async function eliminar(id: number | string): Promise<Comentario | null> {
   const { rows } = await db.query<Comentario>(
     'DELETE FROM comentarios WHERE id = $1 RETURNING *',

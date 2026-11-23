@@ -3,6 +3,16 @@ import bcrypt from 'bcryptjs';
 import { CATALOGO } from './catalogo';
 import type { Rol } from './tipos';
 
+// ============================================================
+// SECCIÓN 1: DEFINICIÓN DE CUENTAS INICIALES
+//
+// COMMIT RECOMENDADO:
+// security: configurar usuarios iniciales con claves del entorno
+// ============================================================
+// ============================================================
+// CÓDIGO ORIGINAL DEL REPOSITORIO DEL TP
+// Funcionalidad: estructura de las cuentas iniciales
+// ============================================================
 interface UsuarioInicial {
   username: string;
   password: string;
@@ -50,6 +60,12 @@ export const USUARIOS_INICIALES: UsuarioInicial[] = [
   },
 ];
 
+// ============================================================
+// SECCIÓN 2: HASH Y CARGA INICIAL DE USUARIOS Y PRODUCTOS
+//
+// COMMIT RECOMENDADO:
+// feat: inicializar usuarios seguros y catálogo base
+// ============================================================
 export async function inicializarBase(): Promise<void> {
   for (const usuario of USUARIOS_INICIALES) {
     if (usuario.password.length < 24 || usuario.password.startsWith('CAMBIA_')) {
@@ -85,6 +101,10 @@ export async function inicializarBase(): Promise<void> {
   }
 
   // --- Catálogo -------------------------------------------------------------
+  // ============================================================
+  // CÓDIGO ORIGINAL DEL REPOSITORIO DEL TP
+  // Funcionalidad: inserción inicial de productos del catálogo
+  // ============================================================
   for (const producto of CATALOGO) {
     await db.query(
       `INSERT INTO productos

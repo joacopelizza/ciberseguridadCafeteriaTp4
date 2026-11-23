@@ -3,6 +3,16 @@
 -- Se ejecuta UNA sola vez, cuando el volumen de PostgreSQL está vacío.
 -- =============================================================================
 
+-- ============================================================
+-- SECCIÓN 1: TABLA DE CUENTAS Y ROLES
+--
+-- COMMIT RECOMENDADO:
+-- feat: definir la tabla de usuarios y autenticación
+-- ============================================================
+-- ============================================================
+-- CÓDIGO ORIGINAL DEL REPOSITORIO DEL TP
+-- Funcionalidad: estructura de las cuentas y sus roles
+-- ============================================================
 CREATE TABLE IF NOT EXISTS usuarios (
     id        SERIAL PRIMARY KEY,
     username  TEXT NOT NULL UNIQUE,
@@ -12,6 +22,16 @@ CREATE TABLE IF NOT EXISTS usuarios (
     creado_en TIMESTAMPTZ DEFAULT now()
 );
 
+-- ============================================================
+-- SECCIÓN 2: TABLA DEL CATÁLOGO DE PRODUCTOS
+--
+-- COMMIT RECOMENDADO:
+-- feat: definir la tabla del catálogo
+-- ============================================================
+-- ============================================================
+-- CÓDIGO ORIGINAL DEL REPOSITORIO DEL TP
+-- Funcionalidad: estructura del catálogo de productos
+-- ============================================================
 CREATE TABLE IF NOT EXISTS productos (
     id               SERIAL PRIMARY KEY,
     nombre           TEXT NOT NULL UNIQUE,
@@ -25,6 +45,16 @@ CREATE TABLE IF NOT EXISTS productos (
     activo           BOOLEAN NOT NULL DEFAULT TRUE
 );
 
+-- ============================================================
+-- SECCIÓN 3: TABLAS DE PEDIDOS Y DETALLE DE ÍTEMS
+--
+-- COMMIT RECOMENDADO:
+-- feat: definir pedidos e ítems de compra
+-- ============================================================
+-- ============================================================
+-- CÓDIGO ORIGINAL DEL REPOSITORIO DEL TP
+-- Funcionalidad: estructura de pedidos y sus ítems
+-- ============================================================
 CREATE TABLE IF NOT EXISTS pedidos (
     id        SERIAL PRIMARY KEY,
     mesa      TEXT,
@@ -42,6 +72,16 @@ CREATE TABLE IF NOT EXISTS pedido_items (
     precio_unitario NUMERIC(10, 2) NOT NULL DEFAULT 0
 );
 
+-- ============================================================
+-- SECCIÓN 4: TABLA DE RESEÑAS DE CLIENTES
+--
+-- COMMIT RECOMENDADO:
+-- feat: definir la tabla de reseñas
+-- ============================================================
+-- ============================================================
+-- CÓDIGO ORIGINAL DEL REPOSITORIO DEL TP
+-- Funcionalidad: estructura de las reseñas de clientes
+-- ============================================================
 CREATE TABLE IF NOT EXISTS comentarios (
     id           SERIAL PRIMARY KEY,
     autor        TEXT,
@@ -50,5 +90,15 @@ CREATE TABLE IF NOT EXISTS comentarios (
     creado_en    TIMESTAMPTZ DEFAULT now()
 );
 
+-- ============================================================
+-- SECCIÓN 5: ÍNDICES PARA CONSULTAS DE PEDIDOS
+--
+-- COMMIT RECOMENDADO:
+-- perf: agregar índices de consulta para pedidos
+-- ============================================================
+-- ============================================================
+-- CÓDIGO ORIGINAL DEL REPOSITORIO DEL TP
+-- Funcionalidad: índices para consultas de pedidos
+-- ============================================================
 CREATE INDEX IF NOT EXISTS idx_pedidos_mesa ON pedidos(mesa);
 CREATE INDEX IF NOT EXISTS idx_items_pedido ON pedido_items(pedido_id);

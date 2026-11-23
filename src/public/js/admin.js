@@ -9,6 +9,16 @@
   var productosCache = {};
   var tokenCsrfPromise = null;
 
+  /* ============================================================
+   * SECCIÓN 1: UTILIDADES, PETICIONES API Y PROTECCIÓN CSRF
+   *
+   * COMMIT RECOMENDADO:
+   * refactor: organizar utilidades y peticiones del panel
+   * ============================================================ */
+  /* ============================================================
+   * CÓDIGO ORIGINAL DEL REPOSITORIO DEL TP
+   * Funcionalidad: selección de elementos y formato de moneda
+   * ============================================================ */
   function $(sel) { return document.querySelector(sel); }
   function $$(sel) { return Array.prototype.slice.call(document.querySelectorAll(sel)); }
 
@@ -63,6 +73,10 @@
     return tokenCsrfPromise;
   }
 
+  /* ============================================================
+   * CÓDIGO ORIGINAL DEL REPOSITORIO DEL TP
+   * Funcionalidad: auxiliares para solicitudes JSON del panel
+   * ============================================================ */
   function postJSON(url, cuerpo) {
     return api(url, {
       method: 'POST',
@@ -92,7 +106,12 @@
     el.textContent = mensaje;
   }
 
-  /* ------------------------------------------------------------------ login */
+  /* ============================================================
+   * SECCIÓN 2: AUTENTICACIÓN Y CONTROL DE LA SESIÓN
+   *
+   * COMMIT RECOMENDADO:
+   * security: proteger acceso y cierre de sesión del panel
+   * ============================================================ */
   function iniciarSesion(evento) {
     evento.preventDefault();
     var caja = $('#login-feedback');
@@ -143,7 +162,12 @@
     cargarUsuarios();
   }
 
-  /* ---------------------------------------------------------------- resumen */
+  /* ============================================================
+   * SECCIÓN 3: RESUMEN Y MÉTRICAS DEL PANEL
+   *
+   * COMMIT RECOMENDADO:
+   * feat: mostrar métricas y últimos pedidos
+   * ============================================================ */
   function cargarResumen() {
     api('/reportes/facturacion').then(function (f) {
       api('/reportes/mas-vendido').then(function (m) {
@@ -173,7 +197,16 @@
     });
   }
 
-  /* --------------------------------------------------------------- pedidos */
+  /* ============================================================
+   * SECCIÓN 4: CONSULTA Y ACTUALIZACIÓN DE PEDIDOS
+   *
+   * COMMIT RECOMENDADO:
+   * feat: administrar pedidos desde el panel
+   * ============================================================ */
+  /* ============================================================
+   * CÓDIGO ORIGINAL DEL REPOSITORIO DEL TP
+   * Funcionalidad: construcción de las filas de pedidos
+   * ============================================================ */
   function tablaPedidos(filas, conAcciones) {
     if (!filas || filas.length === 0) return '<p class="empty">No hay pedidos.</p>';
 
@@ -209,6 +242,10 @@
     });
   }
 
+  /* ============================================================
+   * CÓDIGO ORIGINAL DEL REPOSITORIO DEL TP
+   * Funcionalidad: selección y actualización del estado de un pedido
+   * ============================================================ */
   function cambiarEstado(evento) {
     var select = evento.target.closest('.sel-estado');
     if (!select) return;
@@ -221,7 +258,12 @@
     });
   }
 
-  /* ------------------------------------------------------------- productos */
+  /* ============================================================
+   * SECCIÓN 5: ALTA, EDICIÓN Y BAJA DE PRODUCTOS
+   *
+   * COMMIT RECOMENDADO:
+   * feat: gestionar el catálogo desde el panel
+   * ============================================================ */
   function cargarProductos() {
     api('/productos').then(function (resp) {
       var productos = resp.data.productos || [];
@@ -245,6 +287,10 @@
     });
   }
 
+  /* ============================================================
+   * CÓDIGO ORIGINAL DEL REPOSITORIO DEL TP
+   * Funcionalidad: envío del formulario de alta y edición de productos
+   * ============================================================ */
   function guardarProducto(evento) {
     evento.preventDefault();
     var caja = $('#producto-feedback');
@@ -292,7 +338,16 @@
     $('#producto-id').value = '';
   }
 
-  /* ---------------------------------------------------------------- upload */
+  /* ============================================================
+   * SECCIÓN 6: SUBIDA DE IMÁGENES
+   *
+   * COMMIT RECOMENDADO:
+   * feat: subir imágenes del catálogo desde el panel
+   * ============================================================ */
+  /* ============================================================
+   * CÓDIGO ORIGINAL DEL REPOSITORIO DEL TP
+   * Funcionalidad: lectura y envío de una imagen desde el panel
+   * ============================================================ */
   function subirArchivo(evento) {
     evento.preventDefault();
     var caja = $('#upload-feedback');
@@ -322,7 +377,12 @@
     lector.readAsDataURL(archivo);
   }
 
-  /* -------------------------------------------------------------- reportes */
+  /* ============================================================
+   * SECCIÓN 7: CONSULTA DE REPORTES DE VENTAS
+   *
+   * COMMIT RECOMENDADO:
+   * feat: mostrar métricas y ventas por origen
+   * ============================================================ */
   function cargarReportes() {
     api('/reportes/facturacion').then(function (f) {
       api('/reportes/ticket-promedio').then(function (t) {
@@ -365,7 +425,12 @@
     });
   }
 
-  /* -------------------------------------------------------------- usuarios */
+  /* ============================================================
+   * SECCIÓN 8: GESTIÓN DE USUARIOS Y CONTRASEÑA
+   *
+   * COMMIT RECOMENDADO:
+   * security: administrar usuarios y cambios de contraseña
+   * ============================================================ */
   function cargarUsuarios() {
     api('/admin/usuarios').then(function (resp) {
       var usuarios = resp.data.usuarios || [];
@@ -411,7 +476,12 @@
     });
   }
 
-  /* ----------------------------------------------------------- herramientas */
+  /* ============================================================
+   * SECCIÓN 9: HERRAMIENTAS DE CONEXIÓN Y DIAGNÓSTICO
+   *
+   * COMMIT RECOMENDADO:
+   * security: limitar herramientas administrativas del servidor
+   * ============================================================ */
   function probarConexion(evento) {
     evento.preventDefault();
     var salida = $('#salida-conexion');
@@ -437,7 +507,16 @@
     });
   }
 
-  /* ------------------------------------------------------------------ tabs */
+  /* ============================================================
+   * SECCIÓN 10: NAVEGACIÓN ENTRE PESTAÑAS
+   *
+   * COMMIT RECOMENDADO:
+   * feat: navegar por las secciones del panel
+   * ============================================================ */
+  /* ============================================================
+   * CÓDIGO ORIGINAL DEL REPOSITORIO DEL TP
+   * Funcionalidad: navegación entre pestañas del panel
+   * ============================================================ */
   function activarTab(evento) {
     var tab = evento.target.closest('.tab');
     if (!tab) return;
@@ -449,7 +528,12 @@
     });
   }
 
-  /* ------------------------------------------------------------------ init */
+  /* ============================================================
+   * SECCIÓN 11: REGISTRO DE EVENTOS E INICIO DEL PANEL
+   *
+   * COMMIT RECOMENDADO:
+   * refactor: centralizar la inicialización del panel
+   * ============================================================ */
   function init() {
     // FALLA (XSS de DOM): se lee un parámetro de la URL y se inyecta con
     // código en el navegador del admin.
@@ -459,6 +543,10 @@
       $('#panel-bienvenida').textContent = 'Panel ' + objetivo;
     }
 
+    /* ============================================================
+     * CÓDIGO ORIGINAL DEL REPOSITORIO DEL TP
+     * Funcionalidad: registro de eventos e identificación de la sesión actual
+     * ============================================================ */
     $('#form-login').addEventListener('submit', iniciarSesion);
     $('#btn-logout').addEventListener('click', cerrarSesion);
     $('#btn-refrescar').addEventListener('click', cargarTodo);

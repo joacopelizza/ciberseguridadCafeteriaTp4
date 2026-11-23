@@ -3,7 +3,17 @@ import { calcularPrecio } from '../catalogo';
 import type { Pedido, PedidoConItems, PedidoItem, Producto } from '../tipos';
 import { crearErrorHttp, idPositivo, textoDentroDeRango, valoresValidos } from '../validacion';
 
+// ============================================================
+// SECCIÓN 1: TIPOS DE ENTRADA PARA PEDIDOS
+//
+// COMMIT RECOMENDADO:
+// refactor: tipar los datos recibidos para pedidos
+// ============================================================
 /** Un renglÃ³n del pedido, tal como llega en el cuerpo de la peticiÃ³n. */
+// ============================================================
+// CÓDIGO ORIGINAL DEL REPOSITORIO DEL TP
+// Funcionalidad: estructuras de entrada para pedidos
+// ============================================================
 export interface ItemPedido {
   productoId: number;
   cantidad: number;
@@ -19,6 +29,12 @@ export interface NuevoPedido {
 /** Id tal como llega en la URL (texto) o ya convertido. */
 type Id = number | string;
 
+// ============================================================
+// SECCIÓN 2: VALIDACIÓN Y CREACIÓN DE PEDIDOS
+//
+// COMMIT RECOMENDADO:
+// security: validar pedidos y calcular totales en el servidor
+// ============================================================
 /**
  * Servicio de pedidos.
  *
@@ -62,6 +78,10 @@ export async function crear({ mesa, cliente, items }: NuevoPedido): Promise<Pedi
     });
   }
 
+  // ============================================================
+  // CÓDIGO ORIGINAL DEL REPOSITORIO DEL TP
+  // Funcionalidad: cálculo del total e inserción del pedido y sus ítems
+  // ============================================================
   const total = filas.reduce(
     (acc, f) => acc + f.precioUnitario * f.cantidad,
     0
@@ -92,6 +112,12 @@ async function buscarProducto(productoId: number): Promise<Producto | null> {
   return rows[0] || null;
 }
 
+// ============================================================
+// SECCIÓN 3: LISTADO Y DETALLE DE PEDIDOS
+//
+// COMMIT RECOMENDADO:
+// security: consultar pedidos con filtros y parámetros validados
+// ============================================================
 /** Lista pedidos (con filtro opcional por mesa). */
 export async function listar(mesa?: string): Promise<Pedido[]> {
   if (mesa !== undefined && !mesaValida(mesa)) {
@@ -115,6 +141,10 @@ function mesaValida(mesa: unknown): mesa is string {
 }
 
 /** Devuelve un pedido con sus items. */
+// ============================================================
+// CÓDIGO ORIGINAL DEL REPOSITORIO DEL TP
+// Funcionalidad: consulta del pedido con sus productos
+// ============================================================
 export async function obtenerConItems(id: Id): Promise<PedidoConItems | null> {
   const { rows: pedidos } = await db.query<Pedido>(
     'SELECT * FROM pedidos WHERE id = $1',
@@ -134,11 +164,21 @@ export async function obtenerConItems(id: Id): Promise<PedidoConItems | null> {
   return { ...pedido, items };
 }
 
+// ============================================================
+// SECCIÓN 4: CAMBIO DE ESTADO DEL PEDIDO
+//
+// COMMIT RECOMENDADO:
+// feat: actualizar estados permitidos de pedidos
+// ============================================================
 /** Cambia el estado de un pedido. */
 export async function cambiarEstado(id: Id, estado: string): Promise<Pedido | null> {
   if (!valoresValidos.estadosPedido.includes(estado as (typeof valoresValidos.estadosPedido)[number])) {
     throw crearErrorHttp(400, 'El estado del pedido no es vÃ¡lido.');
   }
+  // ============================================================
+  // CÓDIGO ORIGINAL DEL REPOSITORIO DEL TP
+  // Funcionalidad: actualización parametrizada del estado
+  // ============================================================
   const { rows } = await db.query<Pedido>(
     'UPDATE pedidos SET estado = $1 WHERE id = $2 RETURNING *',
     [estado, id]

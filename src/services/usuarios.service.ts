@@ -19,7 +19,17 @@ const HASH_BCRYPT_FICTICIO = bcrypt.hashSync('credencial-ficticia-no-utilizable'
  * -----------------------------------------------------------------------------
  */
 
+// ============================================================
+// SECCIÓN 1: BÚSQUEDA Y AUTENTICACIÓN DE CUENTAS
+//
+// COMMIT RECOMENDADO:
+// security: autenticar usuarios con consultas y hashes seguros
+// ============================================================
 /** Busca un usuario por nombre de usuario exacto (query parametrizada). */
+// ============================================================
+// CÓDIGO ORIGINAL DEL REPOSITORIO DEL TP
+// Funcionalidad: búsqueda exacta de una cuenta por nombre de usuario
+// ============================================================
 export async function buscarPorUsername(username: string): Promise<Usuario | null> {
   const { rows } = await db.query<Usuario>(
     'SELECT * FROM usuarios WHERE username = $1',
@@ -42,6 +52,12 @@ export async function autenticar(username: string, password: string): Promise<Us
   return usuario && hashValido && coincide ? usuario : null;
 }
 
+// ============================================================
+// SECCIÓN 2: LISTADO Y ACTUALIZACIÓN ADMINISTRATIVA
+//
+// COMMIT RECOMENDADO:
+// security: omitir hashes al listar y actualizar usuarios
+// ============================================================
 /** Lista todos los usuarios (para el panel de administración). */
 export async function listar(): Promise<UsuarioPublico[]> {
   const { rows } = await db.query<UsuarioPublico>(
@@ -72,6 +88,12 @@ export async function actualizar(id: number | string, cambios: Partial<Usuario>)
   return rows[0] || null;
 }
 
+// ============================================================
+// SECCIÓN 3: CAMBIO DE CONTRASEÑA
+//
+// COMMIT RECOMENDADO:
+// security: almacenar contraseñas nuevas con bcrypt
+// ============================================================
 /** Cambia la contraseña de un usuario y almacena el hash bcrypt. */
 export async function cambiarPassword(id: number, nuevaPassword: string): Promise<UsuarioSesion | null> {
   const passwordHash = await bcrypt.hash(nuevaPassword, 12);

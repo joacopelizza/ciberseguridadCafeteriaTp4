@@ -3,6 +3,12 @@ import type { NextFunction, Request, Response } from 'express';
 
 import { leerCookies } from './sesion';
 
+// ============================================================
+// SECCIÓN 1: EMISIÓN DE TOKENS ANTI-CSRF
+//
+// COMMIT RECOMENDADO:
+// security: emitir tokens anti-CSRF para el cliente
+// ============================================================
 const METODOS_QUE_CAMBIAN_ESTADO = new Set(['POST', 'PUT', 'PATCH', 'DELETE']);
 
 /** Emite un token aleatorio que el cliente debe devolver en las escrituras. */
@@ -20,6 +26,12 @@ export function emitirTokenCsrf(req: Request, res: Response): void {
   res.json({ token });
 }
 
+// ============================================================
+// SECCIÓN 2: VALIDACIÓN DE ORIGEN Y TOKEN EN ESCRITURAS
+//
+// COMMIT RECOMENDADO:
+// security: validar origen y token en peticiones de escritura
+// ============================================================
 /** Rechaza las peticiones que cambian datos si no presentan el token. */
 export function verificarCsrf(req: Request, res: Response, next: NextFunction): void {
   if (!METODOS_QUE_CAMBIAN_ESTADO.has(req.method)) return next();

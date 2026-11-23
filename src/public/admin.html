@@ -1,6 +1,10 @@
 <!DOCTYPE html>
 <html lang="es-AR">
 <head>
+  <!-- ============================================================
+       CÓDIGO ORIGINAL DEL REPOSITORIO DEL TP
+       Funcionalidad: metadatos y recursos estáticos del panel
+       ============================================================ -->
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>Panel — Cafetería Origen</title>
@@ -9,6 +13,16 @@
 </head>
 <body class="admin-body">
 
+  <!-- ============================================================
+       SECCIÓN 1: IDENTIDAD DEL PANEL Y USUARIO ACTIVO
+
+       COMMIT RECOMENDADO:
+       feat: mostrar identidad y sesión en el panel
+       ============================================================ -->
+  <!-- ============================================================
+       CÓDIGO ORIGINAL DEL REPOSITORIO DEL TP
+       Funcionalidad: encabezado e identidad del panel
+       ============================================================ -->
 <header class="site-header admin-header">
   <div class="wrap header-inner">
     <a class="brand" href="/">
@@ -25,10 +39,19 @@
 <main class="admin-main">
   <div class="wrap">
 
-    <!-- ============ LOGIN ============ -->
+    <!-- ============================================================
+         SECCIÓN 2: FORMULARIO DE INICIO DE SESIÓN
+
+         COMMIT RECOMENDADO:
+         security: estructurar el acceso autenticado al panel
+         ============================================================ -->
     <section class="card login-card" id="vista-login">
       <h1>Iniciar sesión</h1>
       <p class="muted">Acceso al panel de la cafetería.</p>
+      <!-- ============================================================
+           CÓDIGO ORIGINAL DEL REPOSITORIO DEL TP
+           Funcionalidad: campos y botón del formulario de acceso
+           ============================================================ -->
       <form id="form-login" novalidate>
         <label class="field">
           <span>Usuario</span>
@@ -44,7 +67,16 @@
       <p class="muted small">Las contraseñas iniciales se configuran en el archivo local <code>.env</code>.</p>
     </section>
 
-    <!-- ============ PANEL ============ -->
+    <!-- ============================================================
+         SECCIÓN 3: CONTENEDOR Y NAVEGACIÓN DEL PANEL
+
+         COMMIT RECOMENDADO:
+         feat: organizar la navegación de administración
+         ============================================================ -->
+    <!-- ============================================================
+         CÓDIGO ORIGINAL DEL REPOSITORIO DEL TP
+         Funcionalidad: estructura de las vistas del panel administrativo
+         ============================================================ -->
     <section id="vista-panel" hidden>
 
       <div class="panel-head">
@@ -64,7 +96,12 @@
         <button class="tab" data-vista="herramientas">Herramientas</button>
       </nav>
 
-      <!-- ---------- RESUMEN ---------- -->
+      <!-- ============================================================
+           SECCIÓN 4: RESUMEN Y ÚLTIMOS PEDIDOS
+
+           COMMIT RECOMENDADO:
+           feat: presentar el resumen operativo del panel
+           ============================================================ -->
       <div class="tab-panel is-active" data-panel="resumen">
         <div class="kpi-grid" id="kpis"></div>
         <div class="card">
@@ -73,7 +110,12 @@
         </div>
       </div>
 
-      <!-- ---------- PEDIDOS ---------- -->
+      <!-- ============================================================
+           SECCIÓN 5: LISTADO Y ESTADO DE PEDIDOS
+
+           COMMIT RECOMENDADO:
+           feat: administrar pedidos desde el panel
+           ============================================================ -->
       <div class="tab-panel" data-panel="pedidos">
         <div class="card">
           <h3>Pedidos de todas las mesas</h3>
@@ -81,7 +123,12 @@
         </div>
       </div>
 
-      <!-- ---------- PRODUCTOS ---------- -->
+      <!-- ============================================================
+           SECCIÓN 6: CATÁLOGO, PRODUCTOS Y SUBIDA DE IMÁGENES
+
+           COMMIT RECOMENDADO:
+           feat: gestionar productos e imágenes del catálogo
+           ============================================================ -->
       <div class="tab-panel" data-panel="productos">
         <div class="two-col">
           <div class="card">
@@ -142,7 +189,12 @@
         </div>
       </div>
 
-      <!-- ---------- REPORTES ---------- -->
+      <!-- ============================================================
+           SECCIÓN 7: REPORTES DE VENTAS
+
+           COMMIT RECOMENDADO:
+           feat: consultar reportes de ventas
+           ============================================================ -->
       <div class="tab-panel" data-panel="reportes">
         <div class="kpi-grid" id="kpis-reportes"></div>
         <div class="card">
@@ -159,7 +211,12 @@
         </div>
       </div>
 
-      <!-- ---------- USUARIOS ---------- -->
+      <!-- ============================================================
+           SECCIÓN 8: USUARIOS Y CONTRASEÑA
+
+           COMMIT RECOMENDADO:
+           security: administrar usuarios del sistema
+           ============================================================ -->
       <div class="tab-panel" data-panel="usuarios">
         <div class="card">
           <h3>Usuarios del sistema</h3>
@@ -175,7 +232,12 @@
         </div>
       </div>
 
-      <!-- ---------- HERRAMIENTAS ---------- -->
+      <!-- ============================================================
+           SECCIÓN 9: HERRAMIENTAS ADMINISTRATIVAS
+
+           COMMIT RECOMENDADO:
+           security: proteger herramientas de diagnóstico y conexión
+           ============================================================ -->
       <div class="tab-panel" data-panel="herramientas">
         <div class="two-col">
           <div class="card">
@@ -204,6 +266,10 @@
   </div>
 </main>
 
+<!-- ============================================================
+     CÓDIGO ORIGINAL DEL REPOSITORIO DEL TP
+     Funcionalidad: carga de la lógica del panel
+     ============================================================ -->
 <script src="/js/admin.js"></script>
 </body>
 </html>

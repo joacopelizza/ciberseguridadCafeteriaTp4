@@ -12,6 +12,16 @@
 
 import type { DatosProducto, Numerico, TipoProducto, Variedad } from './tipos';
 
+// ============================================================
+// SECCIÓN 1: TIPOS Y DATOS DE PRECIOS POR ORIGEN
+//
+// COMMIT RECOMENDADO:
+// feat: definir precios y notas de los orígenes
+// ============================================================
+// ============================================================
+// CÓDIGO ORIGINAL DEL REPOSITORIO DEL TP
+// Funcionalidad: tipos, precios y notas de los orígenes
+// ============================================================
 interface Tamano {
   tamano: string;
   gramos: number;
@@ -41,6 +51,16 @@ const TAMANOS_FILTRADO: Tamano[] = [
   { tamano: 'Taza grande', gramos: 25 },
 ];
 
+// ============================================================
+// SECCIÓN 2: CONSTRUCCIÓN DEL CATÁLOGO INICIAL
+//
+// COMMIT RECOMENDADO:
+// feat: generar productos iniciales del catálogo
+// ============================================================
+// ============================================================
+// CÓDIGO ORIGINAL DEL REPOSITORIO DEL TP
+// Funcionalidad: construcción del catálogo inicial
+// ============================================================
 function construirCatalogo(): DatosProducto[] {
   const productos: DatosProducto[] = [];
 
@@ -93,10 +113,20 @@ function construirCatalogo(): DatosProducto[] {
   return productos;
 }
 
+// ============================================================
+// SECCIÓN 3: CÁLCULO DE PRECIOS Y CATÁLOGO EXPORTADO
+//
+// COMMIT RECOMENDADO:
+// feat: calcular precios finales de productos
+// ============================================================
 /**
  * Calcula el precio final de un producto.
  * Regla: costo del café (gramos x precio por gramo) + precio base.
  */
+// ============================================================
+// CÓDIGO ORIGINAL DEL REPOSITORIO DEL TP
+// Funcionalidad: cálculo del precio final y catálogo exportado
+// ============================================================
 export function calcularPrecio(producto: {
   gramos: number | null;
   precio_por_gramo: Numerico;

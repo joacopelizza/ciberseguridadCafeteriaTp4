@@ -7,6 +7,12 @@ const requierePersonal = [requiereSesion, requiereRol('admin', 'barista', 'mozo'
 
 const router = express.Router();
 
+// ============================================================
+// SECCIÓN 1: CREACIÓN PÚBLICA DE PEDIDOS
+//
+// COMMIT RECOMENDADO:
+// feat: recibir pedidos del catálogo desde la web
+// ============================================================
 /**
  * POST /api/pedidos
  * Crea un pedido y devuelve su total calculado.
@@ -14,6 +20,10 @@ const router = express.Router();
  * La API valida el pedido y exige token anti-CSRF. El cliente puede crear un
  * pedido sin cuenta; las consultas y cambios de estado quedan para el personal.
  */
+// ============================================================
+// CÓDIGO ORIGINAL DEL REPOSITORIO DEL TP
+// Funcionalidad: recepción y creación de pedidos desde la web
+// ============================================================
 router.post('/', async (req, res, next) => {
   try {
     const { mesa, cliente, items } = req.body || {};
@@ -24,6 +34,12 @@ router.post('/', async (req, res, next) => {
   }
 });
 
+// ============================================================
+// SECCIÓN 2: CONSULTA DE PEDIDOS PARA PERSONAL AUTORIZADO
+//
+// COMMIT RECOMENDADO:
+// security: restringir la consulta de pedidos al personal
+// ============================================================
 /**
  * GET /api/pedidos?mesa=
  * Lista pedidos sólo para personal autenticado de la cafetería.
@@ -53,6 +69,12 @@ router.get('/:id', ...requierePersonal, async (req, res, next) => {
   }
 });
 
+// ============================================================
+// SECCIÓN 3: ACTUALIZACIÓN DEL ESTADO DEL PEDIDO
+//
+// COMMIT RECOMENDADO:
+// feat: permitir actualizar el estado de pedidos autorizados
+// ============================================================
 /** PATCH /api/pedidos/:id/estado */
 router.patch('/:id/estado', ...requierePersonal, async (req, res, next) => {
   try {

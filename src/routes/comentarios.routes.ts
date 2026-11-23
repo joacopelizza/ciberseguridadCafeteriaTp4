@@ -5,10 +5,20 @@ import { requiereRol, requiereSesion } from '../middleware/auth';
 
 const router = express.Router();
 
+// ============================================================
+// SECCIÓN 1: LECTURA PÚBLICA Y CREACIÓN DE RESEÑAS
+//
+// COMMIT RECOMENDADO:
+// feat: publicar y consultar reseñas de clientes
+// ============================================================
 /**
  * GET /api/comentarios — reseñas públicas de la cafetería.
  * El cliente escapa el contenido antes de mostrarlo.
  */
+// ============================================================
+// CÓDIGO ORIGINAL DEL REPOSITORIO DEL TP
+// Funcionalidad: consulta pública de reseñas
+// ============================================================
 router.get('/', async (req, res, next) => {
   try {
     res.json({ comentarios: await comentarios.listar() });
@@ -22,6 +32,10 @@ router.get('/', async (req, res, next) => {
  *
  * La entrada se limita en el servicio y la escritura requiere token CSRF.
  */
+// ============================================================
+// CÓDIGO ORIGINAL DEL REPOSITORIO DEL TP
+// Funcionalidad: recepción de una reseña desde la web
+// ============================================================
 router.post('/', async (req, res, next) => {
   try {
     const { autor, texto, calificacion } = req.body || {};
@@ -36,6 +50,12 @@ router.post('/', async (req, res, next) => {
   }
 });
 
+// ============================================================
+// SECCIÓN 2: ELIMINACIÓN ADMINISTRATIVA DE RESEÑAS
+//
+// COMMIT RECOMENDADO:
+// security: restringir la eliminación de reseñas a administradores
+// ============================================================
 /** DELETE /api/comentarios/:id */
 router.delete('/:id', requiereSesion, requiereRol('admin'), async (req, res, next) => {
   try {

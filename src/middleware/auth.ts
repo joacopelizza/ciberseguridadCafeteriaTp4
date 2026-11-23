@@ -10,7 +10,17 @@ import type { Rol } from '../tipos';
  * restringidas admiten admin, barista y mozo.
  */
 
+// ============================================================
+// SECCIÓN 1: AUTENTICACIÓN DE LA PETICIÓN
+//
+// COMMIT RECOMENDADO:
+// security: exigir sesiones válidas en rutas protegidas
+// ============================================================
 /** Exige que haya una sesión válida. */
+// ============================================================
+// CÓDIGO ORIGINAL DEL REPOSITORIO DEL TP
+// Funcionalidad: comprobación de sesión para una petición
+// ============================================================
 export function requiereSesion(req: Request, res: Response, next: NextFunction) {
   const sesion = obtenerSesion(req);
   if (!sesion) {
@@ -21,7 +31,17 @@ export function requiereSesion(req: Request, res: Response, next: NextFunction) 
   next();
 }
 
+// ============================================================
+// SECCIÓN 2: AUTORIZACIÓN POR ROL
+//
+// COMMIT RECOMENDADO:
+// security: autorizar rutas según el rol del usuario
+// ============================================================
 /** Exige que el usuario autenticado tenga uno de los roles indicados. */
+// ============================================================
+// CÓDIGO ORIGINAL DEL REPOSITORIO DEL TP
+// Funcionalidad: comprobación del rol requerido por una ruta
+// ============================================================
 export function requiereRol(...roles: Rol[]): RequestHandler {
   return (req, res, next) => {
     if (!req.usuario) {

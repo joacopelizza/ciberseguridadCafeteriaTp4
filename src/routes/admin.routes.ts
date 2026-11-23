@@ -12,6 +12,13 @@ import type { Usuario } from '../tipos';
 import { idPositivo, valoresValidos } from '../validacion';
 
 const router = express.Router();
+
+// ============================================================
+// SECCIÓN 1: REGLAS DE VALIDACIÓN PARA HERRAMIENTAS Y ARCHIVOS
+//
+// COMMIT RECOMENDADO:
+// security: definir límites y formatos permitidos en el panel
+// ============================================================
 const MAX_SIZE = 512 * 1024;
 const HOSTS_PERMITIDOS = new Set(['localhost', '127.0.0.1', 'proveedor.origen.com']);
 const MIME_POR_EXTENSION: Record<string, string> = {
@@ -34,12 +41,28 @@ function coincideFirma(extension: string, buffer: Buffer): boolean {
   return false;
 }
 
+// ============================================================
+// SECCIÓN 2: CONTROL DE ACCESO A TODAS LAS RUTAS ADMINISTRATIVAS
+//
+// COMMIT RECOMENDADO:
+// security: proteger el panel con sesión y rol administrador
+// ============================================================
 /** Todas las rutas del panel requieren sesiÃ³n y rol de administrador. */
 router.use(requiereSesion);
 router.use(requiereRol('admin'));
 
+// ============================================================
+// SECCIÓN 3: CONSULTA Y ACTUALIZACIÓN DE USUARIOS
+//
+// COMMIT RECOMENDADO:
+// security: administrar usuarios y restringir cambios de rol
+// ============================================================
 /** GET /api/admin/usuarios */
 router.get('/usuarios', async (req, res, next) => {
+  // ============================================================
+  // CÓDIGO ORIGINAL DEL REPOSITORIO DEL TP
+  // Funcionalidad: consulta de usuarios para el panel
+  // ============================================================
   try {
     res.json({ usuarios: await usuarios.listar() });
   } catch (err) {
@@ -72,8 +95,18 @@ router.put('/usuarios/:id', async (req, res, next) => {
   }
 });
 
+// ============================================================
+// SECCIÓN 4: ALTA, EDICIÓN Y BAJA LÓGICA DE PRODUCTOS
+//
+// COMMIT RECOMENDADO:
+// feat: gestionar productos desde el panel administrativo
+// ============================================================
 /** POST /api/admin/productos â€” alta de producto. */
 router.post('/productos', async (req, res, next) => {
+  // ============================================================
+  // CÓDIGO ORIGINAL DEL REPOSITORIO DEL TP
+  // Funcionalidad: alta de productos desde el panel
+  // ============================================================
   try {
     const producto = await catalogo.crear(req.body || {});
     res.status(201).json(producto);
@@ -116,6 +149,12 @@ router.delete('/productos/:id', async (req, res, next) => {
   }
 });
 
+// ============================================================
+// SECCIÓN 5: CAMBIO DE CONTRASEÑA DE LA CUENTA ACTUAL
+//
+// COMMIT RECOMENDADO:
+// security: permitir actualizar la contraseña con bcrypt
+// ============================================================
 /** POST /api/admin/cambiar-contrasena — almacena la nueva clave con bcrypt. */
 router.post('/cambiar-contrasena', async (req, res, next) => {
   try {
@@ -131,6 +170,12 @@ router.post('/cambiar-contrasena', async (req, res, next) => {
   }
 });
 
+// ============================================================
+// SECCIÓN 6: PRUEBA SEGURA DE CONEXIÓN AL PROVEEDOR
+//
+// COMMIT RECOMENDADO:
+// security: limitar destinos y ejecutar ping sin shell
+// ============================================================
 /** Prueba un host autorizado sin invocar una shell. */
 router.post('/probar-conexion', (req, res) => {
   const { host } = req.body || {};
@@ -152,6 +197,12 @@ router.post('/probar-conexion', (req, res) => {
   });
 });
 
+// ============================================================
+// SECCIÓN 7: SUBIDA VALIDADA DE IMÁGENES
+//
+// COMMIT RECOMENDADO:
+// security: validar imágenes antes de guardarlas
+// ============================================================
 /** Acepta imÃ¡genes de tipos permitidos, verifica su firma y asigna nombre seguro. */
 router.post('/subir-archivo', express.json({ limit: '8mb' }), (req, res, next) => {
   try {

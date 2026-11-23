@@ -20,11 +20,21 @@
  * =============================================================================
  */
 
+// ============================================================
+// CÓDIGO ORIGINAL DEL REPOSITORIO DEL TP
+// Funcionalidad: análisis estático de los controles de seguridad
+// ============================================================
 import fs from 'fs';
 import path from 'path';
 
 const RAIZ = path.join(__dirname, '..');
 
+// ============================================================
+// SECCIÓN 1: ESTRUCTURA DE CONTROLES Y RESULTADOS
+//
+// COMMIT RECOMENDADO:
+// refactor: tipar controles y hallazgos del checklist
+// ============================================================
 /** Un ítem de la planilla de seguridad. */
 interface Control {
   id: string;
@@ -53,7 +63,12 @@ interface Resultado {
   ejemplos: string[];
 }
 
-/* ============================== utilidades ============================== */
+/* ============================================================
+ * SECCIÓN 2: LECTURA DE ARCHIVOS Y BÚSQUEDA DE PATRONES
+ *
+ * COMMIT RECOMENDADO:
+ * feat: analizar código sin confundir comentarios con lógica
+ * ============================================================ */
 
 /**
  * Enmascara los comentarios (los reemplaza por espacios) sin alterar la
@@ -100,7 +115,12 @@ function buscarEnArchivo(rutaAbsoluta: string, patron: RegExp): Hallazgo | null 
   };
 }
 
-/* ============================== controles ============================== */
+/* ============================================================
+ * SECCIÓN 3: DEFINICIÓN DE CONTROLES ESTÁTICOS DE SEGURIDAD
+ *
+ * COMMIT RECOMENDADO:
+ * security: evaluar controles del checklist OWASP
+ * ============================================================ */
 
 const CONTROLES: Control[] = [
   // -------------------------------------------------------------------------
@@ -585,7 +605,12 @@ const CONTROLES: Control[] = [
   },
 ];
 
-/* ============================== evaluación ============================== */
+/* ============================================================
+ * SECCIÓN 4: EVALUACIÓN DE LOS CONTROLES
+ *
+ * COMMIT RECOMENDADO:
+ * feat: calcular resultados del checklist de seguridad
+ * ============================================================ */
 
 function evaluar(control: Control): Resultado {
   const archivos = control.archivos.flatMap(listarArchivos);
@@ -629,7 +654,12 @@ function evaluar(control: Control): Resultado {
   };
 }
 
-/* ============================== salida ============================== */
+/* ============================================================
+ * SECCIÓN 5: FORMATO E IMPRESIÓN DEL RESULTADO
+ *
+ * COMMIT RECOMENDADO:
+ * feat: mostrar resumen legible del checklist
+ * ============================================================ */
 
 function color(texto: string, codigo: string): string {
   return process.stdout.isTTY ? `\x1b[${codigo}m${texto}\x1b[0m` : texto;
